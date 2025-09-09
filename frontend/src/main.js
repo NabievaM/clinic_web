@@ -1,0 +1,17 @@
+import { createApp } from "vue";
+import App from "./App.vue";
+import { createPinia } from "pinia";
+import router from "./router";
+import { IMaskDirective } from "vue-imask";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
+import "./assets/style.css";
+
+const app = createApp(App);
+
+app.use(createPinia());
+app.use(router);
+
+app.directive("imask", IMaskDirective);
+
+app.mount("#app");
