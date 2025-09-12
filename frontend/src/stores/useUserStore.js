@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { fetchMe } from "@/api/user";
+import { fetchMe, updateUser } from "@/api/user";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -16,7 +16,27 @@ export const useUserStore = defineStore("user", {
         const { data } = await fetchMe();
         this.user = data;
       } catch (err) {
-        this.error = err.message || "Nimadir xato ketdi";
+        this.error =
+          err.response?.data?.message || err.message || "Nimadir xato ketdi";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async updateMyProfile(payload) {
+      if (!this.user?.id) {
+        return { ok: false, message: "Foydalanuvchi aniqlanmadi" };
+      }
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await updateUser(this.user.id, payload);
+        this.user = data.user;
+        return { ok: true, message: data.message };
+      } catch (err) {
+        const msg = err.response?.data?.message || "Yangilashda xato";
+        this.error = msg;
+        return { ok: false, message: msg };
       } finally {
         this.loading = false;
       }

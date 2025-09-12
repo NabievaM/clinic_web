@@ -32,29 +32,36 @@
 
         <div class="flex-1">
           <h1 class="text-4xl font-bold text-gray-900 mb-3">
-            {{ specialist.full_name }}
+            {{ specialist.user.full_name }}
           </h1>
           <p class="text-primary text-xl font-semibold mb-6">
             {{ specialist.position }}
           </p>
 
-          <div class="flex flex-wrap gap-3 mb-8">
+          <div class="flex flex-wrap gap-3 mb-8 items-start">
             <span
               class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm"
             >
-              Tajriba: {{ specialist.experience_years }} yil
+              Tajriba: {{ specialist.experience_years }}
             </span>
-            <span
-              class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm"
-            >
-              {{ specialist.working_days }}
-            </span>
+
             <span
               v-if="specialist.specialization"
               class="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-sm"
             >
               {{ specialist.specialization }}
             </span>
+
+            <div class="flex flex-wrap gap-2 items-center">
+              <span class="font-semibold text-gray-800 mr-2">Ish kunlari:</span>
+              <span
+                v-for="(day, index) in specialist.working_days.split('\\n')"
+                :key="index"
+                class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm"
+              >
+                {{ day }}
+              </span>
+            </div>
           </div>
 
           <p class="text-gray-700 text-lg leading-relaxed">

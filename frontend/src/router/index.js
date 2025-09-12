@@ -7,6 +7,9 @@ import Profile from "@/views/Profile.vue";
 import { useAuthStore } from "@/stores/auth";
 import NotFound from "@/views/NotFound.vue";
 import SpecialistDetail from "@/views/SpecialistDetail.vue";
+import Achievement from "@/views/Achievement.vue";
+import Service from "@/views/ServicesView.vue";
+import SpecialistView from "@/views/SpecialistView.vue";
 
 const routes = [
   {
@@ -34,6 +37,24 @@ const routes = [
     name: "SpecialistDetail",
     component: SpecialistDetail,
     props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/achievement",
+    name: "Achievement",
+    component: Achievement,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/services",
+    name: "Service",
+    component: Service,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/specialists",
+    name: "Specialist",
+    component: SpecialistView,
     meta: { requiresAuth: true },
   },
   {

@@ -74,7 +74,7 @@ export class UsersController {
 
   @Put(':id/update')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin, Role.Patient)
+  @Roles(Role.Admin, Role.Patient, Role.Specialist)
   @ApiOperation({ summary: 'Update user profile' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 200, description: 'User updated successfully' })

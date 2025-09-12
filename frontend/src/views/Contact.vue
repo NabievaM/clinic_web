@@ -41,7 +41,64 @@
 
             <div class="flex items-center gap-4">
               <Clock class="w-6 h-6 text-blue-600" />
-              <p class="text-gray-700">{{ clinic?.working_hours }}</p>
+              <div class="whitespace-pre-line">
+                {{ clinic?.working_hours }}
+              </div>
+            </div>
+
+            <div v-if="accounts.length" class="flex gap-4 pt-4">
+              <a
+                v-for="account in accounts"
+                :key="account.id"
+                :href="account.url"
+                target="_blank"
+                class="text-blue-600 hover:text-blue-800 transition"
+              >
+                <svg
+                  v-if="account.platform === 'facebook'"
+                  class="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 
+              1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 
+              1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12Z"
+                  />
+                </svg>
+
+                <svg
+                  v-else-if="account.platform === 'instagram'"
+                  class="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 
+              5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7Zm10 
+              2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 
+              3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 
+              3-3h10Zm-5 3a5 5 0 1 0 0 10 5 5 
+              0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 
+              3 0 0 1 0-6Zm4.8-.9a1.1 1.1 0 1 
+              0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"
+                  />
+                </svg>
+
+                <svg
+                  v-else-if="account.platform === 'telegram'"
+                  class="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9.9 16.2 9.7 20c.4 0 .6-.2.8-.4l2-2 
+              4.1 3c.8.5 1.4.2 1.6-.8l2.9-13.7c.3-1.2-.4-1.7-1.2-1.4L3.6 
+              9.2c-1.2.5-1.2 1.2-.2 1.5l4.2 1.3L17.4 6c.5-.3.9-.1.5.2L9.9 
+              16.2Z"
+                  />
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -122,11 +179,21 @@
 
 <script setup>
 import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
 import { useClinicStore } from "@/stores/clinic";
+import { useSocialAccountStore } from "@/stores/socialAccount";
 import { MapPin, Phone, Mail, Clock } from "lucide-vue-next";
 import AppLayout from "../layouts/AppLayout.vue";
 
-const store = useClinicStore();
-store.getClinic();
-const { clinic } = storeToRefs(store);
+const clinicStore = useClinicStore();
+clinicStore.getClinic();
+const { clinic } = storeToRefs(clinicStore);
+
+const socialStore = useSocialAccountStore();
+const { accounts } = storeToRefs(socialStore);
+const { getSocialAccounts } = socialStore;
+
+onMounted(() => {
+  getSocialAccounts();
+});
 </script>

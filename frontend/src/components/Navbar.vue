@@ -27,8 +27,21 @@
           Bosh sahifa
         </RouterLink>
 
-        <a href="#services" class="nav-link">Xizmatlar</a>
-        <a href="#experts" class="nav-link">Mutaxassislar</a>
+        <RouterLink
+          to="/services"
+          class="nav-link"
+          :class="{ active: current === 'services' }"
+        >
+          Xizmatlar
+        </RouterLink>
+
+        <RouterLink
+          to="/specialists"
+          class="nav-link"
+          :class="{ active: current === 'specialists' }"
+        >
+          Mutaxassislar
+        </RouterLink>
 
         <RouterLink
           to="/contact"
@@ -76,11 +89,39 @@
     <transition name="slide-fade">
       <div v-if="isOpen" class="md:hidden bg-white shadow-md border-t">
         <nav class="flex flex-col space-y-4 p-4">
-          <RouterLink to="/" class="mobile-link">Bosh sahifa</RouterLink>
-          <a href="#services" class="mobile-link">Xizmatlar</a>
-          <a href="#experts" class="mobile-link">Mutaxassislar</a>
-          <RouterLink to="/contact" class="mobile-link">Bog‘lanish</RouterLink>
-          <RouterLink to="/profile" class="mobile-link"
+          <RouterLink
+            to="/"
+            class="mobile-link"
+            :class="{ active: current === 'home' }"
+            >Bosh sahifa</RouterLink
+          >
+          <RouterLink
+            to="/services"
+            class="mobile-link"
+            :class="{ active: current === 'services' }"
+          >
+            Xizmatlar
+          </RouterLink>
+
+          <RouterLink
+            to="/specialists"
+            class="mobile-link"
+            :class="{ active: current === 'specialists' }"
+          >
+            Mutaxassislar
+          </RouterLink>
+
+          <RouterLink
+            to="/contact"
+            class="mobile-link"
+            :class="{ active: current === 'contact' }"
+            >Bog‘lanish</RouterLink
+          >
+
+          <RouterLink
+            to="/profile"
+            class="mobile-link"
+            :class="{ active: current === 'profile' }"
             >Mening Profilim</RouterLink
           >
         </nav>
@@ -101,7 +142,7 @@ const route = useRoute();
 const current = computed(() => {
   if (route.path === "/") return "home";
   if (route.path.startsWith("/services")) return "services";
-  if (route.path.startsWith("/experts")) return "experts";
+  if (route.path.startsWith("/specialists")) return "specialists";
   if (route.path.startsWith("/contact")) return "contact";
   if (route.path.startsWith("/profile")) return "profile";
 

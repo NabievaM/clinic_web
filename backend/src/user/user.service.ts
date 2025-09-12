@@ -191,7 +191,7 @@ export class UsersService {
     });
   }
 
-  async update(id: number, dto: Partial<SignUpUserDto>, currentUser: any) {
+  async update(id: number, dto: any, currentUser: any) {
     const user = await this.userRepo.findByPk(id);
     if (!user) throw new NotFoundException('Foydalanuvchi topilmadi');
 
@@ -213,7 +213,22 @@ export class UsersService {
     }
 
     if (dto.password) {
+      if (!dto.currentPassword) {
+        throw new BadRequestException('Eski parolni kiriting');
+      }
+
+      const isOldPassValid = await bcrypt.compare(
+        dto.currentPassword,
+        user.password_hash,
+      );
+
+      if (!isOldPassValid) {
+        throw new UnauthorizedException('Eski parolni noto‘g‘ri kiritdingiz');
+      }
+
       dto.password = await bcrypt.hash(dto.password, 7);
+      dto.password_hash = dto.password;
+      delete dto.password;
     }
 
     if (dto.role && currentUser.role !== Role.Admin) {

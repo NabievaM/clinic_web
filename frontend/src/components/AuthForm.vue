@@ -5,6 +5,7 @@
     </h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-5">
+      <!-- Full name -->
       <div v-if="isRegister" class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Ism va familiyangizni kiriting
@@ -19,6 +20,7 @@
         </p>
       </div>
 
+      <!-- Address -->
       <div v-if="isRegister" class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Manzilingiz <span class="text-gray-400">(ixtiyoriy)</span>
@@ -28,11 +30,9 @@
           type="text"
           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
         />
-        <p v-if="errors.address" class="text-red-500 text-sm mt-1">
-          {{ errors.address }}
-        </p>
       </div>
 
+      <!-- Email -->
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Email manzilingiz
@@ -48,13 +48,15 @@
         </p>
       </div>
 
+      <!-- Phone -->
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Telefon raqamingiz
         </label>
         <input
-          v-model="form.phone"
           v-imask="phoneMask"
+          :value="form.phone"
+          @accept="onPhoneAccept"
           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
         />
         <p v-if="errors.phone" class="text-red-500 text-sm mt-1">
@@ -62,6 +64,7 @@
         </p>
       </div>
 
+      <!-- Password -->
       <div class="flex flex-col relative">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Parolingiz
@@ -76,6 +79,7 @@
           @click="showPassword = !showPassword"
           class="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
         >
+          <!-- Show -->
           <svg
             v-if="showPassword"
             xmlns="http://www.w3.org/2000/svg"
@@ -100,6 +104,7 @@
             />
           </svg>
 
+          <!-- Hide -->
           <svg
             v-else
             xmlns="http://www.w3.org/2000/svg"
@@ -132,6 +137,7 @@
         </p>
       </div>
 
+      <!-- Submit -->
       <button
         type="submit"
         class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
@@ -140,6 +146,7 @@
       </button>
     </form>
 
+    <!-- General error -->
     <p v-if="errors.general" class="text-red-500 text-sm mt-3 text-center">
       {{ errors.general }}
     </p>
@@ -163,7 +170,7 @@ const props = defineProps({
 const form = reactive({
   full_name: "",
   email: "",
-  phone: "+998",
+  phone: "",
   password: "",
   address: "",
 });
@@ -179,16 +186,24 @@ const errors = reactive({
 
 const showPassword = ref(false);
 
+// Telefon maskasi
 const phoneMask = {
-  mask: "+998 (00) 000-00-00",
-  lazy: true,
+  mask: "+{998} (00) 000-00-00",
+  lazy: false,
 };
 
+// Mask event orqali modelni yangilash
+const onPhoneAccept = (e) => {
+  form.phone = e.detail.value;
+};
+
+// Email validatsiya
 const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 };
 
+// Formani validatsiya qilish
 const validateForm = () => {
   let valid = true;
   Object.keys(errors).forEach((k) => (errors[k] = ""));
@@ -205,15 +220,17 @@ const validateForm = () => {
       errors.email = "Email noto‘g‘ri formatda.";
       valid = false;
     }
+
+    // Telefon raqamini tekshirish
     if (!form.phone) {
       errors.phone = "Telefon raqam majburiy.";
       valid = false;
-    }
-  } else {
-    const digits = form.phone.replace(/\D/g, "");
-    if (digits.length !== 12) {
-      errors.phone = "Telefon raqam to‘liq kiritilishi kerak.";
-      valid = false;
+    } else {
+      const digits = form.phone.replace(/\D/g, "");
+      if (!digits.startsWith("998") || digits.length !== 12) {
+        errors.phone = "Telefon raqam to‘liq kiritilishi kerak.";
+        valid = false;
+      }
     }
   }
 
@@ -221,39 +238,27 @@ const validateForm = () => {
     errors.password = "Parol majburiy.";
     valid = false;
   } else if (form.password.length < 6) {
-    errors.password = "Parol kamida 6 ta belgi bo‘lishi kerak.";
+    errors.password = "Parol kamida 6 ta belgidan iborat bo‘lishi kerak.";
     valid = false;
-  } else {
-    if (!form.email && (!form.phone || form.phone === "+998")) {
-      errors.email = "Email yoki telefon raqam kiritilishi shart.";
-      errors.phone = "Email yoki telefon raqam kiritilishi shart.";
-      valid = false;
-    }
-    if (form.email && !validateEmail(form.email)) {
-      errors.email = "Email noto‘g‘ri formatda.";
-      valid = false;
-    }
-    if (!form.password) {
-      errors.password = "Parol majburiy.";
-      valid = false;
-    }
   }
 
   return valid;
 };
 
+// Submit
 const handleSubmit = async () => {
   if (!validateForm()) return;
 
   try {
     const payload = { ...form };
-    if (payload.phone === "+998") delete payload.phone;
+    if (payload.phone) {
+      payload.phone = payload.phone.replace(/\D/g, ""); // faqat raqamlarni olib qoladi
+    }
     if (!payload.address) delete payload.address;
 
     await props.onSubmit(payload);
   } catch (err) {
     const data = err;
-
     if (data?.field && data?.message) {
       errors[data.field] = data.message;
     } else if (typeof data?.message === "string") {
