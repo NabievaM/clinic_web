@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { Booking } from '../booking/booking.model';
+import { SpecialistService } from '../specialist_service/specialist_service.model';
 
 interface ServiceCreationAttrs {
   name: string;
@@ -67,4 +68,7 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
 
   @HasMany(() => Booking)
   bookings: Booking[];
+
+  @HasMany(() => SpecialistService, 'service_id')
+  specialistServices: SpecialistService[];
 }

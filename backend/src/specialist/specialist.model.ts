@@ -10,6 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Booking } from '../booking/booking.model';
 import { User } from '../user/user.model';
+import { SpecialistService } from '../specialist_service/specialist_service.model';
 
 @Table({ tableName: 'specialists' })
 export class Specialist extends Model<Specialist> {
@@ -81,4 +82,7 @@ export class Specialist extends Model<Specialist> {
 
   @HasMany(() => Booking)
   bookings: Booking[];
+
+  @HasMany(() => SpecialistService, 'specialist_id')
+  specialistServices: SpecialistService[];
 }

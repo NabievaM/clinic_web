@@ -25,6 +25,8 @@ import { AnalysisResultModule } from './analysis_result/analysis_result.module';
 import { AnalysisResult } from './analysis_result/analysis_result.model';
 import { StatisticsModule } from './statistics/statistics.module';
 import { Statistics } from './statistics/statistic.model';
+import { SpecialistServiceModule } from './specialist_service/specialist_service.module';
+import {SpecialistService} from './specialist_service/specialist_service.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,6 +52,7 @@ import { Statistics } from './statistics/statistic.model';
         Booking,
         AnalysisResult,
         Statistics,
+        SpecialistService
       ],
       autoLoadModels: true,
       logging: false,
@@ -67,6 +70,7 @@ import { Statistics } from './statistics/statistic.model';
     BookingModule,
     AnalysisResultModule,
     StatisticsModule,
+    SpecialistServiceModule,
   ],
   controllers: [],
   providers: [],
