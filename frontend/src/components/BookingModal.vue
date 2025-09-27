@@ -1,80 +1,81 @@
 <template>
   <div
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
     @click.self="$emit('close')"
   >
-    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg relative">
+    <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md relative">
       <button
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
         @click="$emit('close')"
       >
         ✕
       </button>
 
-      <h2 class="text-2xl font-bold mb-4 text-blue-700">
+      <h2 class="text-xl font-semibold mb-4 text-center text-blue-700">
         Xizmatni bron qilish
       </h2>
 
-      <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-        <p><strong>Xizmat:</strong> {{ service.name }}</p>
-        <p><strong>Narxi:</strong> {{ service.price }} so'm</p>
-        <p><strong>Davomiyligi:</strong> {{ service.duration }} daqiqa</p>
+      <div class="mb-4 p-4 bg-blue-50 rounded-xl text-sm">
+        <p class="text-gray-700"><strong>Xizmat:</strong> {{ service.name }}</p>
+        <p class="text-gray-700">
+          <strong>Narxi:</strong> {{ service.price }} so'm
+        </p>
+        <p class="text-gray-700">
+          <strong>Davomiyligi:</strong> {{ service.duration }} daqiqa
+        </p>
       </div>
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">
-        Mutaxassisni tanlang:
+      <label class="block mb-2 text-sm font-medium text-gray-600">
+        Mutaxassisni tanlang
       </label>
-      <div class="space-y-3 max-h-52 overflow-y-auto mb-4">
+      <div class="space-y-3 max-h-40 overflow-y-auto mb-4">
         <div
           v-for="spec in specialists"
           :key="spec.id"
           @click="selectedSpecialist = spec.specialist"
           :class="[
-            'flex items-center p-3 rounded-lg border cursor-pointer transition',
+            'flex items-center p-3 rounded-lg border cursor-pointer transition-all duration-200',
             selectedSpecialist?.id === spec.specialist.id
-              ? 'border-blue-600 bg-blue-50'
-              : 'border-gray-200 hover:bg-gray-100',
+              ? 'border-blue-500 bg-blue-50 shadow-sm'
+              : 'border-gray-200 hover:bg-gray-50',
           ]"
         >
           <img
             :src="getPhotoUrl(spec.specialist.photo)"
             alt="spec"
-            class="w-12 h-12 rounded-full object-cover mr-3"
+            class="w-10 h-10 rounded-full object-cover mr-3"
           />
-          <div>
+          <div class="text-sm">
             <p class="font-medium text-gray-800">
               {{ spec.specialist.user.full_name }}
             </p>
-            <p class="text-sm text-gray-500">
+            <p class="text-gray-500 text-xs">
               {{ spec.specialist.position }} –
               {{ spec.specialist.experience_years }}
-            </p>
-            <p class="text-xs text-gray-400">
-              {{ spec.specialist.specialization }}
             </p>
           </div>
         </div>
       </div>
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">Sana:</label>
+      <label class="block mb-2 text-sm font-medium text-gray-600">Sana</label>
       <input
         type="date"
         v-model="selectedDate"
-        class="w-full border rounded-lg px-3 py-2 mb-4"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring focus:ring-blue-100 focus:border-blue-400 text-sm"
       />
 
-      <label class="block mb-2 text-sm font-medium text-gray-700">Vaqt:</label>
+      <label class="block mb-2 text-sm font-medium text-gray-600">Vaqt</label>
       <input
         type="time"
         v-model="selectedTime"
-        class="w-full border rounded-lg px-3 py-2 mb-4"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-6 focus:ring focus:ring-blue-100 focus:border-blue-400 text-sm"
       />
 
       <button
-        class="bg-green-600 text-white py-2 px-4 rounded-xl hover:bg-green-700 transition w-full"
+        class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700 transition"
         @click="bookNow"
       >
-        Tasdiqlash
+        ✅ Tasdiqlash
       </button>
     </div>
   </div>
