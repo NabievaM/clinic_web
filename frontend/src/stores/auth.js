@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { registerUser, loginUser, fetchMe } from "@/api/auth";
-import api from "@/plugins/axios";
 import router from "@/router";
 
 export const useAuthStore = defineStore("auth", {
@@ -18,7 +17,7 @@ export const useAuthStore = defineStore("auth", {
         this.user = data.user;
         this.accessToken = data.tokens.access_token;
 
-        localStorage.setItem("access_token", data.tokens.access_token);
+        localStorage.setItem("access_token", this.accessToken);
 
         return true;
       } catch (err) {
@@ -38,8 +37,15 @@ export const useAuthStore = defineStore("auth", {
         const { data } = await loginUser(payload);
         this.accessToken = data.tokens.access_token;
 
-        localStorage.setItem("access_token", data.tokens.access_token);
-        await this.fetchUser();
+        localStorage.setItem("access_token", this.accessToken);
+
+        const user = await this.fetchUser();
+
+        if (user?.role === "admin") {
+          await router.push("/admin/dashboard");
+        } else {
+          await router.push("/");
+        }
 
         return true;
       } catch (err) {
@@ -57,6 +63,7 @@ export const useAuthStore = defineStore("auth", {
       if (!this.accessToken) return null;
       try {
         const { data } = await fetchMe();
+        console.log("FETCHED USER =>", data);
         this.user = data;
         return data;
       } catch (err) {
@@ -66,15 +73,10 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async logout() {
-      try {
-        await api.post("/user/logout");
-      } catch (e) {}
       this.user = null;
       this.accessToken = null;
-
       localStorage.removeItem("access_token");
-
-      router.push("/login");
+      await router.push("/login");
     },
   },
 });

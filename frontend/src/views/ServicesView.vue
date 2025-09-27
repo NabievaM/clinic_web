@@ -2,7 +2,7 @@
   <AppLayout>
     <div class="max-w-7xl mx-auto px-6 py-10">
       <h2 class="text-3xl text-primary font-bold mb-10 text-center">
-       Bizning xizmatlarimiz
+        Bizning xizmatlarimiz
       </h2>
 
       <div v-if="loading" class="text-gray-500 text-center">Yuklanmoqda...</div>

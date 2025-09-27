@@ -3,12 +3,12 @@
     <BannerSlider />
 
     <div class="max-w-7xl mx-auto px-6 py-12">
-      <h2 class="text-3xl text-primary text-center font-bold">
+      <h2 class="text-3xl text-primary text-center font-bold mb-3">
         Bizning xizmatlarimiz
       </h2>
-      <div class="mb-5 text-right">
+      <div class="mb-3 text-right">
         <router-link
-          to="/services"
+          to="/services"  
           class="text-primary items-left hover:underline text-lg font-medium"
         >
           Barchasini ko‘rish →
@@ -28,10 +28,10 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-6 py-12">
-      <h2 class="text-3xl text-primary text-center font-bold">
+      <h2 class="text-3xl text-primary text-center font-bold mb-3">
         Bizning mutaxassislar
       </h2>
-      <div class="mb-5 text-right">
+      <div class="mb-3 text-right">
         <router-link
           to="/specialists"
           class="text-primary hover:underline text-lg font-medium"

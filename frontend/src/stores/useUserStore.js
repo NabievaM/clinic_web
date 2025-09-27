@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
-import { fetchMe, updateUser } from "@/api/user";
+import { fetchMe, updateUser, fetchAll } from "@/api/user";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
+    users: [],
     loading: false,
     error: null,
   }),
@@ -18,6 +19,22 @@ export const useUserStore = defineStore("user", {
       } catch (err) {
         this.error =
           err.response?.data?.message || err.message || "Nimadir xato ketdi";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getAllUsers() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await fetchAll();
+        this.users = data;
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          err.message ||
+          "Userlarni olishda xato";
       } finally {
         this.loading = false;
       }
