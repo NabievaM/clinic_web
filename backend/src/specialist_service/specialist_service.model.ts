@@ -15,7 +15,7 @@ import { Service } from '../service/service.model';
 })
 export class SpecialistService extends Model<SpecialistService> {
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   })
@@ -23,14 +23,14 @@ export class SpecialistService extends Model<SpecialistService> {
 
   @ForeignKey(() => Specialist)
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.INTEGER,
     allowNull: false,
   })
   specialist_id: number;
 
   @ForeignKey(() => Service)
   @Column({
-    type: DataType.BIGINT,
+    type: DataType.INTEGER,
     allowNull: false,
   })
   service_id: number;

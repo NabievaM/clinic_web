@@ -5,14 +5,20 @@ import * as uuid from 'uuid';
 
 @Injectable()
 export class FilesService {
-  async createFile(file: any): Promise<string> {
+  async createFile(file?: Express.Multer.File): Promise<string> {
+    if (!file) {
+      throw new HttpException('Fayl topilmadi', HttpStatus.BAD_REQUEST);
+    }
+
     try {
-      const fileName = uuid.v4() + '.jpg';
+      const ext = path.extname(file.originalname);
+      const fileName = uuid.v4() + ext;
       const filePath = path.resolve(__dirname, '..', '..', 'uploads');
 
       if (!fs.existsSync(filePath)) {
         fs.mkdirSync(filePath, { recursive: true });
       }
+
       fs.writeFileSync(path.join(filePath, fileName), file.buffer);
       return fileName;
     } catch (error) {

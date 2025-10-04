@@ -23,6 +23,14 @@ import Achievements from "@/views/admin/Achievements.vue";
 import Socials from "@/views/admin/Socials.vue";
 import BannerDetail from "@/views/admin/BannerDetail.vue";
 import AchievementDetail from "@/views/admin/AchievementDetail.vue";
+import Specialists from "@/views/admin/Specialists.vue";
+import AdminSpecialistDetail from "@/views/admin/SpecialistDetail.vue";
+import SpecialistServices from "@/views/admin/SpecialistServices.vue";
+import Bookings from "@/views/admin/Bookings.vue";
+import AnalysisResults from "@/views/admin/AnalysisResults.vue";
+import ClinicSettings from "@/views/admin/ClinicSettings.vue";
+import SpecialistServiceDetail from "@/views/admin/SpecialistServiceDetail.vue";
+import AnalysisResultDetail from "@/views/admin/AnalysisResultDetail.vue";
 
 const routes = [
   {
@@ -79,7 +87,36 @@ const routes = [
       { path: "dashboard", name: "AdminDashboard", component: Dashboard },
       { path: "users", name: "AdminUsers", component: Users },
       { path: "services", name: "AdminServices", component: Services },
+      { path: "specialists", name: "AdminSpecialists", component: Specialists },
+      {
+        path: "specialist-services",
+        name: "AdminSpecialistServices",
+        component: SpecialistServices,
+      },
+      { path: "bookings", name: "AdminBookings", component: Bookings },
       { path: "statistics", name: "AdminStatistics", component: Statistics },
+      {
+        path: "specialist/:id",
+        name: "AdminSpecialistDetail",
+        component: AdminSpecialistDetail,
+      },
+      {
+        path: "/admin/specialist-service/:id",
+        name: "AdminSpecialistServiceDetail",
+        component: SpecialistServiceDetail,
+        props: true,
+      },
+      {
+        path: "analysis-results",
+        name: "AdminAnalysisResults",
+        component: AnalysisResults,
+      },
+      {
+        path: "analysis-result/:id",
+        name: "AdminAnalysisResultDetail",
+        component: AnalysisResultDetail,
+        props: true,
+      },
       { path: "banners", name: "AdminBanners", component: Banners },
       {
         path: "achievements",
@@ -87,13 +124,16 @@ const routes = [
         component: Achievements,
       },
       {
+        path: "clinic-settings",
+        name: "AdminClinicSettings",
+        component: ClinicSettings,
+      },
+      { path: "socials", name: "AdminSocials", component: Socials },
+      {
         path: "achievement/:id",
         name: "AdminAchievementDetail",
         component: AchievementDetail,
       },
-
-      // { path: "pages", name: "AdminPages", component: Pages },
-      { path: "socials", name: "AdminSocials", component: Socials },
       {
         path: "banner/:id",
         name: "AdminBannerDetail",

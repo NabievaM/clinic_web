@@ -63,7 +63,6 @@ export const useAuthStore = defineStore("auth", {
       if (!this.accessToken) return null;
       try {
         const { data } = await fetchMe();
-        console.log("FETCHED USER =>", data);
         this.user = data;
         return data;
       } catch (err) {

@@ -7,6 +7,7 @@ import {
   ForeignKey,
   HasMany,
   AfterCreate,
+  BelongsTo
 } from 'sequelize-typescript';
 import { User } from '../user/user.model';
 import { Service } from '../service/service.model';
@@ -103,4 +104,13 @@ export class Booking extends Model<Booking> {
       );
     }
   }
+
+  @BelongsTo(() => User)
+  user: User;
+
+  @BelongsTo(() => Specialist)
+  specialist: Specialist;
+
+  @BelongsTo(() => Service)
+  service: Service;
 }

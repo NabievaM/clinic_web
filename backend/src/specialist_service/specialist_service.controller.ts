@@ -14,7 +14,7 @@ import { CreateSpecialistServiceDto } from './dto/create-specialist_service.dto'
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse, 
+  ApiResponse,
   ApiBody,
   ApiParam,
 } from '@nestjs/swagger';
@@ -34,6 +34,12 @@ export class SpecialistServiceController {
     return this.svc.create(dto);
   }
 
+  @Get('all')
+  @ApiOperation({ summary: 'Get all specialist-service mappings' })
+  findAll() {
+    return this.svc.findAll();
+  }
+
   @Get('service/:serviceId/specialists')
   @ApiOperation({ summary: 'Get specialists for a given service' })
   @ApiParam({ name: 'serviceId', type: Number })
@@ -46,6 +52,13 @@ export class SpecialistServiceController {
   @ApiParam({ name: 'specialistId', type: Number })
   findBySpecialist(@Param('specialistId', ParseIntPipe) specialistId: number) {
     return this.svc.findAllBySpecialist(specialistId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get mapping by id' })
+  @ApiParam({ name: 'id', type: Number })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.svc.findOne(id);
   }
 
   @Delete(':id')

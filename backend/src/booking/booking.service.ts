@@ -40,26 +40,75 @@ export class BookingService {
     } as any);
   }
 
-  async findAll(): Promise<Booking[]> {
-    const bookings = await this.bookingModel.findAll();
+  async findAll(): Promise<any[]> {
+    const bookings = await this.bookingModel.findAll({
+      include: [
+        {
+          association: 'user',
+          attributes: ['full_name'],
+        },
+        {
+          association: 'specialist',
+          include: [
+            {
+              association: 'user',
+              attributes: ['full_name'],
+            },
+          ],
+        },
+        {
+          association: 'service', 
+          attributes: ['name'],
+        },
+      ],
+      // attributes: {
+      //   exclude: ['user_id', 'specialist_id', 'service_id'], 
+      // },
+    });
+
     if (!bookings.length) {
       throw new NotFoundException('Hech qanday booking topilmadi!');
     }
     return bookings;
   }
 
-  async findOne(id: number, currentUser: any): Promise<Booking> {
-    const booking = await this.bookingModel.findByPk(id);
+  async findOne(id: number, currentUser: any): Promise<any> {
+    const booking = await this.bookingModel.findByPk(id, {
+      include: [
+        {
+          association: 'user',
+          attributes: ['full_name'],
+        },
+        {
+          association: 'specialist',
+          include: [
+            {
+              association: 'user',
+              attributes: ['full_name'],
+            },
+          ],
+        },
+        {
+          association: 'service',
+          attributes: ['name'],
+        },
+      ],
+      attributes: {
+        exclude: ['user_id', 'specialist_id', 'service_id'],
+      },
+    });
+
     if (!booking) {
       throw new NotFoundException(`ID raqami ${id} bo‘lgan booking topilmadi!`);
     }
 
-    if (currentUser.role === Role.Patient) {
-      if (booking.user_id !== currentUser.userId) {
-        throw new ForbiddenException(
-          'Siz faqat o‘zingizga tegishli bookinglarni ko‘rishingiz mumkin!',
-        );
-      }
+    if (
+      currentUser.role === Role.Patient &&
+      booking.user_id !== currentUser.userId
+    ) {
+      throw new ForbiddenException(
+        'Siz faqat o‘zingizga tegishli bookinglarni ko‘rishingiz mumkin!',
+      );
     }
 
     if (currentUser.role === Role.Specialist) {

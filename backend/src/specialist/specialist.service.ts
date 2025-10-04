@@ -26,21 +26,35 @@ export class SpecialistService {
     photo: Express.Multer.File,
   ): Promise<Specialist> {
     try {
+      if (!createSpecialistDto.user_id) {
+        throw new BadRequestException('User Id kiritish majburiy!');
+      }
+
+      const user = await User.findByPk(createSpecialistDto.user_id);
+      if (!user) {
+        throw new BadRequestException(
+          `Bunday user_id (${createSpecialistDto.user_id}) mavjud emas!`,
+        );
+      }
+
       if (!photo) {
         throw new BadRequestException('Mutaxassis rasmi yuklanishi shart!');
       }
 
       const fileName = await this.fileService.createFile(photo);
 
-      return await this.specialistRepository.create({
+      const specialist = await this.specialistRepository.create({
         ...createSpecialistDto,
         photo: fileName,
       } as any);
+
+      return await this.findOne(specialist.id);
     } catch (error) {
       if (error instanceof ValidationError) {
         const messages = error.errors.map((e) => {
-          if (e.path === 'full_name') return 'Mutaxassis to‘liq ismi majburiy!';
+          if (e.path === 'user_id') return 'User Id kiritish majburiy!';
           if (e.path === 'position') return 'Lavozim majburiy maydon!';
+          if (e.path === 'photo') return 'Rasm yuklanishi majburiy!';
           if (e.path === 'experience_years')
             return 'Tajriba yillari ko‘rsatilishi shart!';
           if (e.path === 'specialization')

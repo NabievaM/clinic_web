@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <router-link
-      to="/#experts"
+      to="/specialists"
       class="inline-flex items-center text-lg font-medium text-primary pt-8 pl-8 hover:text-blue-700 transition-colors"
     >
       <svg

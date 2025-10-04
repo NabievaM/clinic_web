@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getAllServices } from "../api/service";
+import { getAllServices, createService } from "../api/service";
 
 export const useServiceStore = defineStore("service", {
   state: () => ({
@@ -16,6 +16,20 @@ export const useServiceStore = defineStore("service", {
         this.services = res.data;
       } catch (err) {
         this.error = err.response?.data?.message || err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async addService(data) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const res = await createService(data);
+        this.services.push(res.data);
+        return true;
+      } catch (err) {
+        this.error = err.response?.data?.message || err.message;
+        return false;
       } finally {
         this.loading = false;
       }

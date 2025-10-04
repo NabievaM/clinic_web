@@ -4,6 +4,7 @@ import { createPinia } from "pinia";
 import router from "./router";
 import { IMaskDirective } from "vue-imask";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import '@/assets/admin.css'
 import VueApexCharts from "vue3-apexcharts";
 
 import "./assets/style.css";
