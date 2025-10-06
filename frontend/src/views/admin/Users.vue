@@ -44,6 +44,7 @@
           <th class="px-4 py-3 text-left">Manzil</th>
           <th class="px-4 py-3 text-left">Lavozim</th>
           <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
+          <th class="px-4 py-3 text-right">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -56,9 +57,7 @@
           <td class="px-4 py-3">{{ u.full_name }}</td>
           <td class="px-4 py-3">{{ formatPhone(u.phone) }}</td>
           <td class="px-4 py-3 text-gray-600">{{ u.email }}</td>
-          <td class="px-4 py-3 text-gray-600">
-            {{ u.address || "—" }}
-          </td>
+          <td class="px-4 py-3 text-gray-600">{{ u.address || "—" }}</td>
           <td class="px-4 py-3">
             <span
               :class="[
@@ -76,6 +75,14 @@
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
+          <td class="px-4 py-3 text-right">
+            <button
+              @click="openDeleteModal(u)"
+              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -85,17 +92,24 @@
     v-if="!userStore.loading && userStore.users.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary">
-      <h2 class="text-xl">Foydalanuvchilar ro‘yxati</h2>
-      <Users class="w-5 h-7" />
+    <div class="flex gap-2 font-bold text-primary mb-2 items-center">
+      <Users class="w-5 h-5" />
+      <h2 class="text-lg">Foydalanuvchilar ro‘yxati</h2>
     </div>
 
     <div
       v-for="u in [...userStore.users].sort((a, b) => a.id - b.id)"
       :key="u.id"
-      class="bg-white p-4 rounded-lg shadow border border-gray-200"
+      class="relative bg-white p-4 rounded-xl shadow border border-gray-200"
     >
-      <div class="flex justify-between items-center mb-2">
+      <button
+        @click="openDeleteModal(u)"
+        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
+      >
+        <Trash2 class="w-4 h-4" />
+      </button>
+
+      <div class="flex justify-between items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold text-gray-800">{{ u.full_name }}</h3>
         <span
           :class="[
@@ -110,6 +124,7 @@
           {{ u.role }}
         </span>
       </div>
+
       <p class="text-sm text-gray-600">📞 {{ formatPhone(u.phone) }}</p>
       <p class="text-sm text-gray-600">✉️ {{ u.email }}</p>
       <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
@@ -125,14 +140,27 @@
   >
     Hech qanday foydalanuvchi topilmadi 🙅‍♂️
   </div>
+
+  <DeleteModal
+    :visible="showDelete"
+    :title="deleteTitle"
+    :message="deleteMessage"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  />
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
-import { Users } from "lucide-vue-next";
+import { Users, Trash2 } from "lucide-vue-next";
+import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 
 const userStore = useUserStore();
+const showDelete = ref(false);
+const deleteUserData = ref(null);
+const deleteTitle = ref("");
+const deleteMessage = ref("");
 
 onMounted(() => {
   userStore.getAllUsers();
@@ -145,5 +173,24 @@ function formatPhone(phone) {
     /(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
     "+$1 ($2) $3-$4-$5"
   );
+}
+
+function openDeleteModal(user) {
+  deleteUserData.value = user;
+  deleteTitle.value = "Foydalanuvchini o‘chirish";
+  deleteMessage.value = `${user.full_name} foydalanuvchisini rostan ham o‘chirilsinmi?`;
+  showDelete.value = true;
+}
+
+async function confirmDelete() {
+  const { ok, message } = await userStore.deleteUserById(
+    deleteUserData.value.id
+  );
+  if (!ok) console.error(message);
+  showDelete.value = false;
+}
+
+function cancelDelete() {
+  showDelete.value = false;
 }
 </script>

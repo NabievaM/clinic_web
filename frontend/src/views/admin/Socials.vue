@@ -1,4 +1,14 @@
 <template>
+  <div class="flex justify-end mb-2">
+    <button
+      @click="showModal = true"
+      class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
+    >
+      <Plus class="w-4 h-4" />
+      <span>Ijtimoiy tarmoq qo‘shish</span>
+    </button>
+  </div>
+
   <div v-if="socialStore.loading" class="flex items-center gap-2 text-gray-500">
     <svg
       class="animate-spin h-5 w-5 text-primary"
@@ -24,13 +34,6 @@
   </div>
 
   <div
-    v-if="socialStore.error"
-    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg"
-  >
-    ❌ {{ socialStore.error }}
-  </div>
-
-  <div
     v-if="!socialStore.loading && socialStore.accounts.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
@@ -41,6 +44,7 @@
           <th class="px-4 py-3 text-left">Platforma</th>
           <th class="px-4 py-3 text-left">Havola</th>
           <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
+          <th class="px-4 py-3 text-center">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -57,6 +61,14 @@
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
+          <td class="px-4 py-3 text-right">
+            <button
+              @click="openDeleteModal(acc)"
+              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -66,7 +78,7 @@
     v-if="!socialStore.loading && socialStore.accounts.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary">
+    <div class="flex gap-2 font-bold text-primary items-center">
       <h2 class="text-xl">Ijtimoiy tarmoqlar</h2>
       <Share2 class="w-5 h-7" />
     </div>
@@ -74,9 +86,15 @@
     <div
       v-for="acc in [...socialStore.accounts].sort((a, b) => a.id - b.id)"
       :key="acc.id"
-      class="bg-white p-4 rounded-lg shadow border border-gray-200"
+      class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <div class="flex justify-between items-center mb-2">
+      <button
+        @click="openDeleteModal(acc)"
+        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
+      >
+        <Trash2 class="w-4 h-4" />
+      </button>
+      <div class="flex justify-between items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold capitalize text-gray-800">
           {{ acc.platform }}
         </h3>
@@ -96,16 +114,69 @@
   >
     Hech qanday ijtimoiy tarmoq topilmadi 🙅‍♂️
   </div>
+
+  <SocialAccountForm v-model="showModal" :form="form" @submit="submitForm" />
+  <DeleteModal
+    :visible="showDelete"
+    :title="deleteTitle"
+    :message="deleteMessage"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  />
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useSocialAccountStore } from "@/stores/socialAccount";
-import { Share2 } from "lucide-vue-next";
+import { Share2, Plus, Trash2 } from "lucide-vue-next";
+import SocialAccountForm from "@/components/admin/SocialAccountForm.vue";
+import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 
 const socialStore = useSocialAccountStore();
+const showModal = ref(false);
+const showDelete = ref(false);
+const deleteAccountData = ref(null);
+const deleteTitle = ref("");
+const deleteMessage = ref("");
+
+const form = ref({
+  platform: "",
+  url: "",
+});
 
 onMounted(() => {
   socialStore.getSocialAccounts();
 });
+
+async function submitForm(data, setError) {
+  try {
+    await socialStore.addSocialAccount(data);
+    showModal.value = false;
+    form.value = { platform: "", url: "" };
+    await socialStore.getSocialAccounts();
+  } catch (error) {
+    if (typeof setError === "function") {
+      setError(error.message);
+    }
+  }
+}
+
+function openDeleteModal(acc) {
+  deleteAccountData.value = acc;
+  deleteTitle.value = "Ijtimoiy tarmoqni o‘chirish";
+  deleteMessage.value = `${acc.platform} ijtimoiy tarmog‘i rostan ham o‘chirilsinmi?`;
+  showDelete.value = true;
+}
+
+async function confirmDelete() {
+  const { success, message } = await socialStore.removeSocialAccount(
+    deleteAccountData.value.id
+  );
+  if (!success) console.error(message);
+  showDelete.value = false;
+}
+
+function cancelDelete() {
+  showDelete.value = false;
+}
 </script>

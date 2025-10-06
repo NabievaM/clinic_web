@@ -39,7 +39,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
 import navItems from "@/data/navItems";
 import * as LucideIcons from "lucide-vue-next";
 import { LogOut } from "lucide-vue-next";
@@ -69,5 +68,4 @@ function handleNavClick() {
 function onLogout() {
   emit("logout");
 }
-
 </script>

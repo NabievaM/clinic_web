@@ -36,18 +36,18 @@
     v-if="!specialistStore.loading && specialistStore.specialists.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
-    <table class="min-w-full divide-y divide-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 table-auto text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Ism</th>
-          <th class="px-4 py-3 text-left">Lavozim</th>
-          <th class="px-4 py-3 text-left">Tajriba</th>
-          <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
-          <th class="px-4 py-3 text-left">Amallar</th>
+          <th class="px-4 py-3">ID</th>
+          <th class="px-4 py-3">Ism</th>
+          <th class="px-4 py-3">Lavozim</th>
+          <th class="px-4 py-3">Tajriba</th>
+          <th class="px-4 py-3">Qo‘shilgan sana</th>
+          <th class="px-4 py-3">Amallar</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-100">
+      <tbody class="divide-y divide-gray-100 text-center">
         <tr
           v-for="s in specialistStore.specialists"
           :key="s.id"
@@ -61,12 +61,20 @@
             {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
           <td class="px-4 py-3">
-            <router-link
-              :to="`/admin/specialist/${s.id}`"
-              class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
-            >
-              Batafsil
-            </router-link>
+            <div class="flex items-center justify-center gap-3">
+              <router-link
+                :to="`/admin/specialist/${s.id}`"
+                class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+              >
+                Batafsil
+              </router-link>
+              <button
+                @click="openDeleteModal(s)"
+                class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+              >
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -85,8 +93,15 @@
     <div
       v-for="s in specialistStore.specialists"
       :key="s.id"
-      class="bg-white p-4 rounded-lg shadow border border-gray-200"
+      class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
+      <button
+        @click="openDeleteModal(s)"
+        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600"
+      >
+        <Trash2 class="w-4 h-4" />
+      </button>
+
       <p class="text-sm font-semibold text-gray-800">
         👨‍⚕️ {{ s.user.full_name }}
       </p>
@@ -114,16 +129,29 @@
   </div>
 
   <SpecialistForm v-model="showModal" :form="form" @submit="submitForm" />
+
+  <DeleteModal
+    :visible="showDelete"
+    :title="deleteTitle"
+    :message="deleteMessage"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { useSpecialistStore } from "@/stores/specialist";
-import { Users, Plus } from "lucide-vue-next";
+import { Users, Plus, Trash2 } from "lucide-vue-next";
 import SpecialistForm from "@/components/admin/SpecialistForm.vue";
+import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 
 const specialistStore = useSpecialistStore();
-const showModal = ref(false); 
+const showModal = ref(false);
+const showDelete = ref(false);
+const deleteSpecialistData = ref(null);
+const deleteTitle = ref("");
+const deleteMessage = ref("");
 
 const form = ref({
   user_id: "",
@@ -142,8 +170,7 @@ onMounted(() => {
 
 async function submitForm(data, setError) {
   try {
-    const created = await specialistStore.addSpecialist(data);
-
+    await specialistStore.add(data);
     showModal.value = false;
     form.value = {
       user_id: "",
@@ -155,16 +182,29 @@ async function submitForm(data, setError) {
       status: "active",
       description: "",
     };
-
     await specialistStore.getSpecialists();
   } catch (error) {
     const message =
       error?.response?.data?.message ||
       error?.message ||
       "Noma'lum xato yuz berdi";
-    if (typeof setError === "function") {
-      setError(message);
-    }
+    if (typeof setError === "function") setError(message);
   }
+}
+
+function openDeleteModal(specialist) {
+  deleteSpecialistData.value = specialist;
+  deleteTitle.value = "Mutaxassisni o‘chirish";
+  deleteMessage.value = `${specialist.user.full_name} mutaxassisini rostan ham o‘chirmoqchimisiz?`;
+  showDelete.value = true;
+}
+
+async function confirmDelete() {
+  await specialistStore.remove(deleteSpecialistData.value.id);
+  showDelete.value = false;
+}
+
+function cancelDelete() {
+  showDelete.value = false;
 }
 </script>

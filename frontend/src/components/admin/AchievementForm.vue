@@ -19,9 +19,7 @@
         >
           <Plus class="w-5 h-5" />
         </div>
-        <h2 class="text-lg font-semibold text-gray-800">
-          Tahlil natijasi qo‘shish
-        </h2>
+        <h2 class="text-lg font-semibold text-gray-800">Yutuq qo‘shish</h2>
       </div>
 
       <div
@@ -33,16 +31,17 @@
 
       <form @submit.prevent="handleSubmit" class="space-y-3">
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">Booking ID</label>
+          <label class="text-sm font-medium text-gray-700">Sarlavha</label>
           <input
-            v-model.number="localForm.booking_id"
-            type="number"
-            placeholder="Masalan: 7"
+            v-model="localForm.title"
+            type="text"
+            placeholder="Masalan: Eng yaxshi klinika 2024"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            :class="{ 'border-red-400': fieldErrors.booking_id }"
+            :class="{ 'border-red-400': fieldErrors.title }"
+            @input="clearError('title')"
           />
-          <p v-if="fieldErrors.booking_id" class="text-red-500 text-sm mt-1">
-            {{ fieldErrors.booking_id }}
+          <p v-if="fieldErrors.title" class="text-red-500 text-sm mt-1">
+            {{ fieldErrors.title }}
           </p>
         </div>
 
@@ -51,22 +50,41 @@
           <textarea
             v-model="localForm.description"
             rows="2"
-            placeholder="Natija haqida qisqacha"
+            placeholder="Yutuq haqida qisqacha"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none resize-none transition"
+            :class="{ 'border-red-400': fieldErrors.description }"
+            @input="clearError('description')"
           ></textarea>
+          <p v-if="fieldErrors.description" class="text-red-500 text-sm mt-1">
+            {{ fieldErrors.description }}
+          </p>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">PDF fayl</label>
+          <label class="text-sm font-medium text-gray-700">Sana</label>
+          <input
+            v-model="localForm.achieved_date"
+            type="date"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
+            :class="{ 'border-red-400': fieldErrors.achieved_date }"
+            @input="clearError('achieved_date')"
+          />
+          <p v-if="fieldErrors.achieved_date" class="text-red-500 text-sm mt-1">
+            {{ fieldErrors.achieved_date }}
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-gray-700">Rasm</label>
           <input
             type="file"
-            accept="application/pdf"
+            accept="image/*"
             @change="handleFileUpload"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            :class="{ 'border-red-400': fieldErrors.file_url }"
+            :class="{ 'border-red-400': fieldErrors.image }"
           />
-          <p v-if="fieldErrors.file_url" class="text-red-500 text-sm mt-1">
-            {{ fieldErrors.file_url }}
+          <p v-if="fieldErrors.image" class="text-red-500 text-sm mt-1">
+            {{ fieldErrors.image }}
           </p>
         </div>
 
@@ -104,8 +122,10 @@ const emit = defineEmits(["update:modelValue", "submit"]);
 const localForm = ref({ ...props.form });
 const formError = ref("");
 const fieldErrors = ref({
-  booking_id: "",
-  file_url: "",
+  title: "",
+  description: "",
+  achieved_date: "",
+  image: "",
 });
 
 watch(
@@ -114,7 +134,12 @@ watch(
     if (val) {
       localForm.value = { ...props.form };
       formError.value = "";
-      fieldErrors.value = { booking_id: "", file_url: "" };
+      fieldErrors.value = {
+        title: "",
+        description: "",
+        achieved_date: "",
+        image: "",
+      };
     }
   }
 );
@@ -122,43 +147,51 @@ watch(
 function handleFileUpload(e) {
   const file = e.target.files[0];
   if (file) {
-    localForm.value.file_url = file;
-    fieldErrors.value.file_url = "";
+    localForm.value.image = file;
+    fieldErrors.value.image = "";
   }
+}
+
+function clearError(field) {
+  fieldErrors.value[field] = "";
 }
 
 function handleSubmit() {
   formError.value = "";
-  fieldErrors.value = { booking_id: "", file_url: "" };
+  fieldErrors.value = {
+    title: "",
+    description: "",
+    achieved_date: "",
+    image: "",
+  };
 
   let hasError = false;
-
-  if (!localForm.value.booking_id) {
-    fieldErrors.value.booking_id = "Booking ID kiritish majburiy!";
+  if (!localForm.value.title) {
+    fieldErrors.value.title = "Sarlavha maydoni bo‘sh bo‘lishi mumkin emas!";
     hasError = true;
   }
-
-  if (!localForm.value.file_url) {
-    fieldErrors.value.file_url = "📄 Iltimos, PDF fayl yuklang!";
+  if (!localForm.value.description) {
+    fieldErrors.value.description =
+      "Tavsif maydoni bo‘sh bo‘lishi mumkin emas!";
+    hasError = true;
+  }
+  if (!localForm.value.achieved_date) {
+    fieldErrors.value.achieved_date = "Sana to‘ldirilishi shart!";
+    hasError = true;
+  }
+  if (!localForm.value.image) {
+    fieldErrors.value.image = "Rasm yuklang!";
     hasError = true;
   }
 
   if (hasError) return;
 
   const formData = new FormData();
-  Object.keys(localForm.value).forEach((key) => {
-    let value = localForm.value[key];
-    if (key === "booking_id" && value !== undefined && value !== null) {
-      value = parseInt(value);
-    }
-    if (value !== undefined && value !== null) {
-      formData.append(key, value);
-    }
-  });
+  Object.entries(localForm.value).forEach(([key, value]) =>
+    formData.append(key, value)
+  );
 
-  emit("submit", formData, (error) => {
-    formError.value = error;
-  });
+  emit("submit", formData, (err) => (formError.value = err));
 }
 </script>
 

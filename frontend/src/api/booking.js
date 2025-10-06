@@ -10,3 +10,4 @@ export const updateBooking = (id, payload) =>
   api.put(`/booking/${id}`, payload);
 
 export const deleteBooking = (id) => api.delete(`/booking/${id}`);
+

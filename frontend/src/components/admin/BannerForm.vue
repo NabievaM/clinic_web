@@ -19,9 +19,7 @@
         >
           <Plus class="w-5 h-5" />
         </div>
-        <h2 class="text-lg font-semibold text-gray-800">
-          Tahlil natijasi qo‘shish
-        </h2>
+        <h2 class="text-lg font-semibold text-gray-800">Banner qo‘shish</h2>
       </div>
 
       <div
@@ -33,41 +31,72 @@
 
       <form @submit.prevent="handleSubmit" class="space-y-3">
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">Booking ID</label>
+          <label class="text-sm font-medium text-gray-700">Sarlavha</label>
           <input
-            v-model.number="localForm.booking_id"
-            type="number"
-            placeholder="Masalan: 7"
+            v-model="localForm.title"
+            @input="errors.title = ''"
+            type="text"
+            placeholder="Masalan: Tishlarni bepul tekshiruv aksiyasi!"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            :class="{ 'border-red-400': fieldErrors.booking_id }"
+            :class="{ 'border-red-400': errors.title }"
           />
-          <p v-if="fieldErrors.booking_id" class="text-red-500 text-sm mt-1">
-            {{ fieldErrors.booking_id }}
+          <p v-if="errors.title" class="text-red-500 text-sm mt-1">
+            {{ errors.title }}
           </p>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">Tavsif</label>
-          <textarea
-            v-model="localForm.description"
-            rows="2"
-            placeholder="Natija haqida qisqacha"
-            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none resize-none transition"
-          ></textarea>
+          <label class="text-sm font-medium text-gray-700">
+            Taglavha (ixtiyoriy)
+          </label>
+          <input
+            v-model="localForm.subtitle"
+            type="text"
+            placeholder="Masalan: Zamonaviy uskunalarda davolanish imkoniyati"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
+          />
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">PDF fayl</label>
+          <label class="text-sm font-medium text-gray-700">Tartib raqami</label>
+          <input
+            v-model.number="localForm.display_order"
+            @input="errors.display_order = ''"
+            type="number"
+            placeholder="Masalan: 1"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
+            :class="{ 'border-red-400': errors.display_order }"
+          />
+          <p v-if="errors.display_order" class="text-red-500 text-sm mt-1">
+            {{ errors.display_order }}
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-gray-700">Banner rasmi</label>
           <input
             type="file"
-            accept="application/pdf"
-            @change="handleFileUpload"
+            accept="image/*"
+            @change="
+              (e) => {
+                handleFileUpload(e);
+                errors.image = '';
+              }
+            "
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-            :class="{ 'border-red-400': fieldErrors.file_url }"
+            :class="{ 'border-red-400': errors.image }"
           />
-          <p v-if="fieldErrors.file_url" class="text-red-500 text-sm mt-1">
-            {{ fieldErrors.file_url }}
+          <p v-if="errors.image" class="text-red-500 text-sm mt-1">
+            Banner rasmi tanlanishi kerak!
           </p>
+
+          <div v-if="previewUrl" class="mt-2">
+            <img
+              :src="previewUrl"
+              alt="Preview"
+              class="w-full h-40 object-cover rounded-lg border"
+            />
+          </div>
         </div>
 
         <div class="flex justify-end gap-2 pt-4 border-t">
@@ -102,11 +131,9 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue", "submit"]);
 
 const localForm = ref({ ...props.form });
+const errors = ref({});
 const formError = ref("");
-const fieldErrors = ref({
-  booking_id: "",
-  file_url: "",
-});
+const previewUrl = ref(null);
 
 watch(
   () => props.modelValue,
@@ -114,7 +141,8 @@ watch(
     if (val) {
       localForm.value = { ...props.form };
       formError.value = "";
-      fieldErrors.value = { booking_id: "", file_url: "" };
+      errors.value = {};
+      previewUrl.value = null;
     }
   }
 );
@@ -122,38 +150,29 @@ watch(
 function handleFileUpload(e) {
   const file = e.target.files[0];
   if (file) {
-    localForm.value.file_url = file;
-    fieldErrors.value.file_url = "";
+    localForm.value.image = file;
+    previewUrl.value = URL.createObjectURL(file);
   }
 }
 
 function handleSubmit() {
+  errors.value = {};
   formError.value = "";
-  fieldErrors.value = { booking_id: "", file_url: "" };
 
-  let hasError = false;
+  if (!localForm.value.title)
+    errors.value.title = "Sarlavha to‘ldirilishi shart!";
+  if (!localForm.value.display_order)
+    errors.value.display_order = "Tartib raqami to‘ldirilishi shart!";
+  if (!localForm.value.image)
+    errors.value.image = "Banner rasmi tanlanishi kerak!";
 
-  if (!localForm.value.booking_id) {
-    fieldErrors.value.booking_id = "Booking ID kiritish majburiy!";
-    hasError = true;
+  if (Object.keys(errors.value).length > 0) {
+    return;
   }
-
-  if (!localForm.value.file_url) {
-    fieldErrors.value.file_url = "📄 Iltimos, PDF fayl yuklang!";
-    hasError = true;
-  }
-
-  if (hasError) return;
 
   const formData = new FormData();
-  Object.keys(localForm.value).forEach((key) => {
-    let value = localForm.value[key];
-    if (key === "booking_id" && value !== undefined && value !== null) {
-      value = parseInt(value);
-    }
-    if (value !== undefined && value !== null) {
-      formData.append(key, value);
-    }
+  Object.entries(localForm.value).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) formData.append(key, value);
   });
 
   emit("submit", formData, (error) => {

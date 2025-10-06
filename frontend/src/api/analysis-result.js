@@ -11,3 +11,13 @@ export const createAnalysisResult = (formData) =>
       "Content-Type": "multipart/form-data",
     },
   });
+
+export const updateAnalysisResult = (id, formData) =>
+  api.put(`/analysis-result/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+export const deleteAnalysisResult = (id) =>
+  api.delete(`/analysis-result/${id}`);

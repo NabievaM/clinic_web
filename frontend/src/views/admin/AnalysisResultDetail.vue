@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, onBeforeUnmount, defineProps } from "vue";
+import { onMounted, ref, onBeforeUnmount } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
 import { DownloadIcon } from "lucide-vue-next";
 

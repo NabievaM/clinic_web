@@ -29,21 +29,21 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
     type: DataType.STRING,
     allowNull: false,
   })
-  name: string;
+  declare name: string;
 
   @ApiProperty({ example: 50.0, description: 'Price of the service' })
   @Column({
     type: DataType.DECIMAL,
     allowNull: false,
   })
-  price: number;
+  declare price: number;
 
   @ApiProperty({ example: 60, description: 'Duration in minutes' })
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  duration: number;
+  declare duration: number;
 
   @ApiProperty({
     example: 'Professional dental cleaning service',
@@ -53,7 +53,7 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
     type: DataType.TEXT,
     allowNull: true,
   })
-  description: string;
+  declare description: string;
 
   @ApiProperty({
     example: true,
@@ -64,11 +64,11 @@ export class Service extends Model<Service, ServiceCreationAttrs> {
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  is_popular: boolean;
+  declare is_popular: boolean;
 
   @HasMany(() => Booking)
-  bookings: Booking[];
+  declare bookings: Booking[];
 
   @HasMany(() => SpecialistService, 'service_id')
-  specialistServices: SpecialistService[];
+  declare specialistServices: SpecialistService[];
 }

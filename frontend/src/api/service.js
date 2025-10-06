@@ -1,9 +1,11 @@
 import api from "@/plugins/axios";
 
-export const getAllServices = () => {
-  return api.get("/service/all");
-};
+export const getAllServices = () => api.get("/service/all");
 
-export const createService = (data) => {
-  return api.post("/service/create", data);
-};
+export const getServiceById = (id) => api.get(`/service/${id}`);
+
+export const createService = (data) => api.post("/service/create", data);
+
+export const updateService = (id, data) => api.put(`/service/${id}`, data);
+
+export const deleteServiceById = (id) => api.delete(`/service/${id}`);

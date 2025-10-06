@@ -3,6 +3,8 @@ import {
   fetchAnalysisResults,
   fetchAnalysisResultById,
   createAnalysisResult,
+  updateAnalysisResult,
+  deleteAnalysisResult,
 } from "@/api/analysis-result";
 
 export const useAnalysisResultStore = defineStore("analysis_result", {
@@ -12,6 +14,7 @@ export const useAnalysisResultStore = defineStore("analysis_result", {
     loading: false,
     error: null,
   }),
+
   actions: {
     async getResults() {
       this.loading = true;
@@ -21,7 +24,9 @@ export const useAnalysisResultStore = defineStore("analysis_result", {
         this.results = res.data;
       } catch (err) {
         this.error =
-          err.response?.data?.message || err.message || "Nimadir xato ketdi";
+          err.response?.data?.message ||
+          err.message ||
+          "Natijalarni olishda xatolik";
       } finally {
         this.loading = false;
       }
@@ -35,7 +40,9 @@ export const useAnalysisResultStore = defineStore("analysis_result", {
         this.result = res.data;
       } catch (err) {
         this.error =
-          err.response?.data?.message || err.message || "Nimadir xato ketdi";
+          err.response?.data?.message ||
+          err.message ||
+          "Natijani olishda xatolik";
       } finally {
         this.loading = false;
       }
@@ -45,37 +52,72 @@ export const useAnalysisResultStore = defineStore("analysis_result", {
       this.loading = true;
       this.error = null;
       try {
-        let payload;
-        if (data instanceof FormData) {
-          payload = data;
-        } else {
-          payload = new FormData();
+        const formData = data instanceof FormData ? data : new FormData();
+        if (!(data instanceof FormData)) {
           for (const key of Object.keys(data || {})) {
             const value = data[key];
-            if (value === undefined || value === null) continue;
-            payload.append(key, value);
+            if (value !== undefined && value !== null) {
+              formData.append(key, value);
+            }
           }
         }
 
-        const res = await createAnalysisResult(payload);
+        const res = await createAnalysisResult(formData);
         this.results.unshift(res.data);
         return res.data;
       } catch (err) {
-        const serverMessage = err.response?.data?.message;
-        let message = "Natija qo‘shishda xatolik";
-        if (serverMessage) {
-          if (Array.isArray(serverMessage)) {
-            message = serverMessage.join(", ");
-          } else if (typeof serverMessage === "string") {
-            message = serverMessage;
-          } else {
-            message = JSON.stringify(serverMessage);
+        const msg =
+          err.response?.data?.message ||
+          err.message ||
+          "Natija yaratishda xatolik";
+        this.error = Array.isArray(msg) ? msg.join(", ") : msg;
+        throw new Error(this.error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async updateResult(id, data) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const formData = data instanceof FormData ? data : new FormData();
+        if (!(data instanceof FormData)) {
+          for (const key of Object.keys(data || {})) {
+            const value = data[key];
+            if (value !== undefined && value !== null) {
+              formData.append(key, value);
+            }
           }
-        } else if (err.message) {
-          message = err.message;
         }
-        this.error = message;
-        throw new Error(message);
+
+        const res = await updateAnalysisResult(id, formData);
+        const index = this.results.findIndex((r) => r.id === id);
+        if (index !== -1) this.results[index] = res.data;
+        return res.data;
+      } catch (err) {
+        const msg =
+          err.response?.data?.message ||
+          err.message ||
+          "Natijani yangilashda xatolik";
+        this.error = Array.isArray(msg) ? msg.join(", ") : msg;
+        throw new Error(this.error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async deleteResult(id) {
+      this.loading = true;
+      this.error = null;
+      try {
+        await deleteAnalysisResult(id);
+        this.results = this.results.filter((r) => r.id !== id);
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          err.message ||
+          "Natijani o‘chirishda xatolik";
       } finally {
         this.loading = false;
       }

@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsNotEmpty, IsUrl } from 'class-validator';
 import { Platform } from '../../common/enums/platform.enum';
-
 export class CreateSocialAccountDto {
   @ApiProperty({
-    description:
-      'The social media platform of the clinic (e.g., Facebook, Instagram, Telegram)',
+    description: 'The social media platform of the clinic',
     enum: Platform,
     example: Platform.Facebook,
   })
   @IsEnum(Platform)
+  @IsNotEmpty()
   platform: Platform;
 
   @ApiProperty({
@@ -17,5 +16,7 @@ export class CreateSocialAccountDto {
     example: 'https://www.facebook.com/clinicname',
   })
   @IsString()
+  @IsNotEmpty()
+  @IsUrl({ require_tld: false })
   url: string;
 }

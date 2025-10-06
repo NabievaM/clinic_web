@@ -16,21 +16,10 @@
         r="10"
         stroke="currentColor"
         stroke-width="4"
-      ></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8H4z"
-      ></path>
+      />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
     </svg>
     Yuklanmoqda...
-  </div>
-
-  <div
-    v-if="bookingStore.error"
-    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg"
-  >
-    ❌ {{ bookingStore.error }}
   </div>
 
   <div
@@ -47,6 +36,7 @@
           <th class="px-4 py-3 text-left">Qabul vaqti</th>
           <th class="px-4 py-3 text-left">Yaratilgan</th>
           <th class="px-4 py-3 text-left">Status</th>
+          <th class="px-4 py-3 text-right">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -62,9 +52,7 @@
           <td class="px-4 py-3 text-gray-500">
             {{ formatUTC(b.booking_datetime) }}
           </td>
-          <td class="px-4 py-3 text-gray-500">
-            {{ formatUTC(b.createdAt) }}
-          </td>
+          <td class="px-4 py-3 text-gray-500">{{ formatUTC(b.createdAt) }}</td>
           <td class="px-4 py-3">
             <span
               :class="[
@@ -79,6 +67,14 @@
               {{ b.status }}
             </span>
           </td>
+          <td class="px-4 py-3 text-right">
+            <button
+              @click="openDeleteModal(b)"
+              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -88,17 +84,24 @@
     v-if="!bookingStore.loading && bookingStore.bookings.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary">
-      <h2 class="text-xl">Bronlar ro‘yxati</h2>
-      <FileText class="w-5 h-7" />
+    <div class="flex gap-2 font-bold text-primary items-center">
+      <FileText class="w-5 h-5" />
+      <h2 class="text-lg">Bronlar ro‘yxati</h2>
     </div>
 
     <div
       v-for="b in [...bookingStore.bookings].sort((a, b) => a.id - b.id)"
       :key="b.id"
-      class="bg-white p-4 rounded-lg shadow border border-gray-200"
+      class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <div class="flex justify-between items-center mb-2">
+      <button
+        @click="openDeleteModal(b)"
+        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
+      >
+        <Trash2 class="w-4 h-4" />
+      </button>
+
+      <div class="flex justify-between items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold text-gray-800">Bron #{{ b.id }}</h3>
         <span
           :class="[
@@ -113,8 +116,9 @@
           {{ b.status }}
         </span>
       </div>
+
       <p class="text-sm text-gray-600">👤 {{ b.user?.full_name }}</p>
-      <p class="text-sm text-gray-600">💉{{ b.service?.name }}</p>
+      <p class="text-sm text-gray-600">💉 {{ b.service?.name }}</p>
       <p class="text-sm text-gray-600">
         👨‍⚕️ {{ b.specialist?.user?.full_name }}
       </p>
@@ -133,14 +137,27 @@
   >
     Hech qanday booking topilmadi 🙅‍♂️
   </div>
+
+  <DeleteModal
+    :visible="showDelete"
+    :title="deleteTitle"
+    :message="deleteMessage"
+    @confirm="confirmDelete"
+    @cancel="cancelDelete"
+  />
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useBookingStore } from "@/stores/booking";
-import { FileText } from "lucide-vue-next";
+import { FileText, Trash2 } from "lucide-vue-next";
+import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 
 const bookingStore = useBookingStore();
+const showDelete = ref(false);
+const deleteData = ref(null);
+const deleteTitle = ref("");
+const deleteMessage = ref("");
 
 onMounted(() => {
   bookingStore.getBookings();
@@ -154,5 +171,25 @@ function formatUTC(dateStr) {
   const hours = String(d.getUTCHours()).padStart(2, "0");
   const minutes = String(d.getUTCMinutes()).padStart(2, "0");
   return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+function openDeleteModal(b) {
+  deleteData.value = b;
+  deleteTitle.value = "Bronni o‘chirish";
+  deleteMessage.value = `${b.user?.full_name || "Foydalanuvchi"}ning "${
+    b.service?.name || "Xizmat"
+  }" bronini rostan ham o‘chirmoqchimisiz?`;
+  showDelete.value = true;
+}
+
+async function confirmDelete() {
+  if (deleteData.value) {
+    await bookingStore.removeBooking(deleteData.value.id);
+    showDelete.value = false;
+  }
+}
+
+function cancelDelete() {
+  showDelete.value = false;
 }
 </script>
