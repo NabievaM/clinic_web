@@ -42,14 +42,14 @@ export class SpecialistServiceController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all specialist-service mappings' })
   findAll() {
     return this.svc.findAll();
   }
 
   @Get('service/:serviceId/specialists')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get specialists for a given service' })
   @ApiParam({ name: 'serviceId', type: Number })
   findByService(@Param('serviceId', ParseIntPipe) serviceId: number) {
@@ -57,7 +57,7 @@ export class SpecialistServiceController {
   }
 
   @Get('specialist/:specialistId/services')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get services for a given specialist' })
   @ApiParam({ name: 'specialistId', type: Number })
   findBySpecialist(@Param('specialistId', ParseIntPipe) specialistId: number) {
@@ -65,7 +65,7 @@ export class SpecialistServiceController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get mapping by id' })
   @ApiParam({ name: 'id', type: Number })
   findOne(@Param('id', ParseIntPipe) id: number) {

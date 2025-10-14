@@ -212,6 +212,32 @@ export class UsersService {
       throw new ForbiddenException('Siz rolni adminga o‘zgartira olmaysiz');
     }
 
+    if (dto.phone && dto.phone !== user.phone) {
+      const existingPhone = await this.userRepo.findOne({
+        where: { phone: dto.phone },
+      });
+
+      if (existingPhone) {
+        throw new BadRequestException({
+          message: 'Ushbu telefon raqam allaqachon mavjud!',
+          field: 'phone',
+        });
+      }
+    }
+
+    if (dto.email && dto.email !== user.email) {
+      const existingEmail = await this.userRepo.findOne({
+        where: { email: dto.email },
+      });
+
+      if (existingEmail) {
+        throw new BadRequestException({
+          message: 'Ushbu email allaqachon mavjud!',
+          field: 'email',
+        });
+      }
+    }
+
     if (dto.password) {
       if (!dto.currentPassword) {
         throw new BadRequestException('Eski parolni kiriting');
@@ -223,7 +249,7 @@ export class UsersService {
       );
 
       if (!isOldPassValid) {
-        throw new UnauthorizedException('Eski parolni noto‘g‘ri kiritdingiz');
+        throw new UnauthorizedException('Eski parol noto‘g‘ri');
       }
 
       dto.password = await bcrypt.hash(dto.password, 7);

@@ -44,7 +44,7 @@ export class ServiceController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all services (patients and admins)' })
   @ApiResponse({
     status: 200,
@@ -56,7 +56,7 @@ export class ServiceController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get service by ID (patients and admins)' })
   @ApiResponse({ status: 200, description: 'Service details', type: Service })
   findOne(@Param('id', ParseIntPipe) id: number) {

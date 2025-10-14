@@ -56,7 +56,7 @@ export class SpecialistController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all specialists (patients and admins)' })
   @ApiResponse({
     status: 200,
@@ -69,7 +69,7 @@ export class SpecialistController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get a specialist by ID (patients and admins)' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({

@@ -89,6 +89,22 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    async updateUserById(id, payload) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await updateUser(id, payload);
+        await this.getAllUsers();
+        return { ok: true, message: data.message };
+      } catch (err) {
+        const msg = err.response?.data?.message || "Yangilashda xato";
+        this.error = msg;
+        return { ok: false, message: msg };
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async deleteUserById(id) {
       this.loading = true;
       this.error = null;

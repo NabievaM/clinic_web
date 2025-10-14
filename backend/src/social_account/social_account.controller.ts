@@ -31,7 +31,7 @@ export class SocialAccountController {
     return this.socialAccountService.create(dto);
   }
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Retrieve all social accounts' })
   @ApiResponse({
     status: 200,
@@ -42,7 +42,7 @@ export class SocialAccountController {
     return this.socialAccountService.findAll();
   }
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Retrieve a single social account by ID' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({

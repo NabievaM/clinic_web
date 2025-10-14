@@ -53,7 +53,7 @@ export class AchievementController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all achievements' })
   @ApiResponse({
     status: 200,
@@ -65,7 +65,7 @@ export class AchievementController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get achievement by ID' })
   @ApiParam({ name: 'id', type: Number, example: 1 })
   @ApiResponse({

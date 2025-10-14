@@ -16,7 +16,10 @@
     <p class="text-gray-600 mb-4 line-clamp-3">{{ service.description }}</p>
 
     <div class="mt-auto flex justify-between text-sm text-gray-700 pt-4">
-      <span class="text-green-600"><strong class="text-gray-700">Narxi:</strong> {{ formatPrice(service.price) }}</span>
+      <span class="text-green-600"
+        ><strong class="text-gray-700">Narxi:</strong>
+        {{ formatPrice(service.price) }}</span
+      >
       <span><strong>Davomiyligi:</strong> {{ service.duration }} daqiqa</span>
     </div>
 
@@ -40,6 +43,8 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 import BookingModal from "./BookingModal.vue";
 import BookingSuccess from "./BookingSuccess.vue";
 
@@ -47,10 +52,16 @@ const props = defineProps({
   service: { type: Object, required: true },
 });
 
+const router = useRouter();
+const auth = useAuthStore();
 const showBooking = ref(false);
 const bookingSuccess = ref(false);
 
 const openBooking = () => {
+  if (!auth.accessToken) {
+    router.push("/login");
+    return;
+  }
   showBooking.value = true;
 };
 

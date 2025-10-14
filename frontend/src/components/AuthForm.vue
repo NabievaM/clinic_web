@@ -5,7 +5,6 @@
     </h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Full name -->
       <div v-if="isRegister" class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Ism va familiyangizni kiriting
@@ -20,7 +19,6 @@
         </p>
       </div>
 
-      <!-- Address -->
       <div v-if="isRegister" class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Manzilingiz <span class="text-gray-400">(ixtiyoriy)</span>
@@ -32,7 +30,6 @@
         />
       </div>
 
-      <!-- Email -->
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Email manzilingiz
@@ -48,7 +45,6 @@
         </p>
       </div>
 
-      <!-- Phone -->
       <div class="flex flex-col">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Telefon raqamingiz
@@ -64,7 +60,6 @@
         </p>
       </div>
 
-      <!-- Password -->
       <div class="flex flex-col relative">
         <label class="text-sm font-medium text-gray-700 mb-1">
           Parolingiz
@@ -79,7 +74,6 @@
           @click="showPassword = !showPassword"
           class="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
         >
-          <!-- Show -->
           <svg
             v-if="showPassword"
             xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +98,6 @@
             />
           </svg>
 
-          <!-- Hide -->
           <svg
             v-else
             xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +130,6 @@
         </p>
       </div>
 
-      <!-- Submit -->
       <button
         type="submit"
         class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
@@ -146,7 +138,6 @@
       </button>
     </form>
 
-    <!-- General error -->
     <p v-if="errors.general" class="text-red-500 text-sm mt-3 text-center">
       {{ errors.general }}
     </p>
@@ -186,24 +177,20 @@ const errors = reactive({
 
 const showPassword = ref(false);
 
-// Telefon maskasi
 const phoneMask = {
   mask: "+{998} (00) 000-00-00",
   lazy: false,
 };
 
-// Mask event orqali modelni yangilash
 const onPhoneAccept = (e) => {
   form.phone = e.detail.value;
 };
 
-// Email validatsiya
 const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 };
 
-// Formani validatsiya qilish
 const validateForm = () => {
   let valid = true;
   Object.keys(errors).forEach((k) => (errors[k] = ""));
@@ -221,7 +208,6 @@ const validateForm = () => {
       valid = false;
     }
 
-    // Telefon raqamini tekshirish
     if (!form.phone) {
       errors.phone = "Telefon raqam majburiy.";
       valid = false;
@@ -245,14 +231,13 @@ const validateForm = () => {
   return valid;
 };
 
-// Submit
 const handleSubmit = async () => {
   if (!validateForm()) return;
 
   try {
     const payload = { ...form };
     if (payload.phone) {
-      payload.phone = payload.phone.replace(/\D/g, ""); // faqat raqamlarni olib qoladi
+      payload.phone = payload.phone.replace(/\D/g, "");
     }
     if (!payload.address) delete payload.address;
 

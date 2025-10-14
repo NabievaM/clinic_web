@@ -24,13 +24,6 @@
   </div>
 
   <div
-    v-if="userStore.error"
-    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg"
-  >
-    ❌ {{ userStore.error }}
-  </div>
-
-  <div
     v-if="!userStore.loading && userStore.users.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
@@ -44,7 +37,7 @@
           <th class="px-4 py-3 text-left">Manzil</th>
           <th class="px-4 py-3 text-left">Lavozim</th>
           <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
-          <th class="px-4 py-3 text-right">Amallar</th>
+          <th class="px-4 py-3 text-center">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -69,19 +62,27 @@
                   : 'bg-green-100 text-green-600',
               ]"
             >
-              {{ u.role }}
+              {{ u.role || "—" }}
             </span>
           </td>
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3 text-right">
-            <button
-              @click="openDeleteModal(u)"
-              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
-            >
-              <Trash2 class="w-4 h-4" />
-            </button>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-center gap-2">
+              <button
+                @click="openEditModal(u)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+              >
+                <Edit3 class="w-4 h-4" />
+              </button>
+              <button
+                @click="openDeleteModal(u)"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+              >
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -102,18 +103,26 @@
       :key="u.id"
       class="relative bg-white p-4 rounded-xl shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(u)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex flex-row items-center gap-2">
+        <button
+          @click="openEditModal(u)"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+        >
+          <Edit3 class="w-4 h-4" />
+        </button>
+        <button
+          @click="openDeleteModal(u)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
-      <div class="flex justify-between items-center mb-2 pr-10">
+      <div class="pr-12">
         <h3 class="text-lg font-semibold text-gray-800">{{ u.full_name }}</h3>
         <span
           :class="[
-            'px-2 py-1 rounded-full text-xs font-semibold',
+            'inline-block mt-1 px-2 py-1 rounded-full text-xs font-semibold',
             u.role === 'admin'
               ? 'bg-red-100 text-red-600'
               : u.role === 'specialist'
@@ -121,16 +130,15 @@
               : 'bg-green-100 text-green-600',
           ]"
         >
-          {{ u.role }}
+          {{ u.role || "—" }}
         </span>
+        <p class="text-sm text-gray-600 mt-2">📞 {{ formatPhone(u.phone) }}</p>
+        <p class="text-sm text-gray-600">✉️ {{ u.email }}</p>
+        <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
+        <p class="text-xs text-gray-500 mt-2">
+          🗓 {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
+        </p>
       </div>
-
-      <p class="text-sm text-gray-600">📞 {{ formatPhone(u.phone) }}</p>
-      <p class="text-sm text-gray-600">✉️ {{ u.email }}</p>
-      <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
-      <p class="text-xs text-gray-500 mt-2">
-        🗓 {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
-      </p>
     </div>
   </div>
 
@@ -140,6 +148,16 @@
   >
     Hech qanday foydalanuvchi topilmadi 🙅‍♂️
   </div>
+
+  <EditModal
+    :visible="showEdit"
+    :title="'Foydalanuvchini tahrirlash'"
+    :formData="editUserData"
+    :fields="editFields"
+    :error="editFormError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
 
   <DeleteModal
     :visible="showDelete"
@@ -153,14 +171,51 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
-import { Users, Trash2 } from "lucide-vue-next";
+import { Users, Trash2, Edit3 } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 
 const userStore = useUserStore();
+
 const showDelete = ref(false);
 const deleteUserData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+const showEdit = ref(false);
+const editUserData = ref({});
+const editFormError = ref("");
+
+const editFields = [
+  {
+    label: "Ism Familiya",
+    model: "full_name",
+    type: "text",
+    placeholder: "Ali Karimov",
+  },
+  {
+    label: "Telefon raqam",
+    model: "phone",
+    type: "text",
+    placeholder: "+998...",
+  },
+  {
+    label: "Email",
+    model: "email",
+    type: "email",
+    placeholder: "example@gmail.com",
+  },
+  { label: "Manzil", model: "address", type: "text", placeholder: "Toshkent" },
+  {
+    label: "Lavozim",
+    model: "role",
+    type: "select",
+    options: [
+      { value: "admin", label: "Admin" },
+      { value: "specialist", label: "Mutaxassis" },
+      { value: "patient", label: "Bemor" },
+    ],
+  },
+];
 
 onMounted(() => {
   userStore.getAllUsers();
@@ -173,6 +228,31 @@ function formatPhone(phone) {
     /(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/,
     "+$1 ($2) $3-$4-$5"
   );
+}
+
+function openEditModal(user) {
+  editUserData.value = { ...user };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updatedUser) {
+  editFormError.value = "";
+
+  const { ok, message } = await userStore.updateUserById(
+    updatedUser.id,
+    updatedUser
+  );
+
+  if (!ok) {
+    editFormError.value = message;
+  } else {
+    showEdit.value = false;
+    await userStore.getAllUsers();
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
 }
 
 function openDeleteModal(user) {

@@ -54,7 +54,7 @@ export class ClinicSettingController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all clinic settings (patients and admins)' })
   @ApiResponse({
     status: 200,
@@ -67,7 +67,7 @@ export class ClinicSettingController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get clinic setting by ID (patients and admins)' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({

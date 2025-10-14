@@ -53,7 +53,7 @@ export class BannerController {
   }
 
   @Get('all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all banners (patients and admins)' })
   @ApiResponse({ status: 200, description: 'List of banners', type: [Banner] })
   async findAll(): Promise<Banner[]> {
@@ -61,7 +61,7 @@ export class BannerController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get banner by ID (patients and admins)' })
   @ApiResponse({ status: 200, description: 'Banner details', type: Banner })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Banner> {

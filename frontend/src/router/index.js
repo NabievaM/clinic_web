@@ -19,7 +19,6 @@ import Services from "@/views/admin/Services.vue";
 import Statistics from "@/views/admin/Statistics.vue";
 import Banners from "@/views/admin/Banners.vue";
 import Achievements from "@/views/admin/Achievements.vue";
-// import Pages from "@/views/admin/Pages.vue";
 import Socials from "@/views/admin/Socials.vue";
 import BannerDetail from "@/views/admin/BannerDetail.vue";
 import AchievementDetail from "@/views/admin/AchievementDetail.vue";
@@ -33,19 +32,16 @@ import SpecialistServiceDetail from "@/views/admin/SpecialistServiceDetail.vue";
 import AnalysisResultDetail from "@/views/admin/AnalysisResultDetail.vue";
 
 const routes = [
+  { path: "/", name: "Home", component: HomeView },
+  { path: "/services", name: "Service", component: Service },
+  { path: "/specialists", name: "Specialist", component: SpecialistView },
+  { path: "/achievement", name: "Achievement", component: Achievement },
+  { path: "/contact", name: "Contact", component: Contact },
   {
-    path: "/",
-    name: "Home",
-    component: HomeView,
-    meta: { requiresAuth: true },
-  },
-  { path: "/register", name: "Register", component: RegisterView },
-  { path: "/login", name: "Login", component: LoginView },
-  {
-    path: "/contact",
-    name: "Contact",
-    component: Contact,
-    meta: { requiresAuth: true },
+    path: "/specialist/:id",
+    name: "SpecialistDetail",
+    component: SpecialistDetail,
+    props: true,
   },
   {
     path: "/profile",
@@ -53,32 +49,6 @@ const routes = [
     component: Profile,
     meta: { requiresAuth: true },
   },
-  {
-    path: "/specialist/:id",
-    name: "SpecialistDetail",
-    component: SpecialistDetail,
-    props: true,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/achievement",
-    name: "Achievement",
-    component: Achievement,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/services",
-    name: "Service",
-    component: Service,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/specialists",
-    name: "Specialist",
-    component: SpecialistView,
-    meta: { requiresAuth: true },
-  },
-
   {
     path: "/admin",
     component: AdminLayout,
@@ -101,7 +71,7 @@ const routes = [
         component: AdminSpecialistDetail,
       },
       {
-        path: "/admin/specialist-service/:id",
+        path: "specialist-service/:id",
         name: "AdminSpecialistServiceDetail",
         component: SpecialistServiceDetail,
         props: true,
@@ -141,12 +111,9 @@ const routes = [
       },
     ],
   },
-
-  {
-    path: "/:pathMatch(.*)*",
-    name: "NotFound",
-    component: NotFound,
-  },
+  { path: "/register", name: "Register", component: RegisterView },
+  { path: "/login", name: "Login", component: LoginView },
+  { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound },
 ];
 
 const router = createRouter({
@@ -157,7 +124,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore();
 
-  if (to.name === "Login" && auth.accessToken) {
+  if ((to.name === "Login" || to.name === "Register") && auth.accessToken) {
     return next("/");
   }
 
@@ -173,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
     return next("/");
   }
 
-  return next();
+  next();
 });
 
 export default router;
