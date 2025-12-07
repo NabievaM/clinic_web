@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { SignUpUserDto } from './signup-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MinLength, IsEnum } from 'class-validator';
+import { Role } from '../../common/enums/role.enum';
 
 export class UpdateUserDto extends PartialType(SignUpUserDto) {
   @ApiProperty({
@@ -23,4 +24,13 @@ export class UpdateUserDto extends PartialType(SignUpUserDto) {
   @IsOptional()
   @MinLength(6)
   password?: string;
+
+  @ApiProperty({
+    description: 'Role (faqat admin o‘zgartira oladi)',
+    enum: Role,
+    required: false,
+  })
+  @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
 }

@@ -60,10 +60,11 @@ export const useServiceStore = defineStore("service", {
         const res = await updateService(id, data);
         const index = this.services.findIndex((s) => s.id === id);
         if (index !== -1) this.services[index] = res.data;
-        return true;
+
+        return { ok: true };
       } catch (err) {
         this.error = err.response?.data?.message || err.message;
-        return false;
+        return { ok: false, message: this.error };
       } finally {
         this.loading = false;
       }

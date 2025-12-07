@@ -43,14 +43,6 @@ export class SignUpUserDto {
   address?: string;
 
   @ApiProperty({
-    description: 'Role of the user',
-    enum: Role,
-    example: Role.Patient,
-  })
-  @IsEnum(Role)
-  role: Role;
-
-  @ApiProperty({
     description: 'Password for account access',
     example: 'strongPassword123',
     minLength: 6,

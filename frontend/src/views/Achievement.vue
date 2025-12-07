@@ -27,7 +27,7 @@
           class="flex flex-col md:flex-row items-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
         >
           <img
-            :src="`http://localhost:3000/uploads/${item.image}`"
+            :src="`http://localhost:3001/uploads/${item.image}`"
             alt="achievement image"
             class="w-full md:w-64 h-40 object-cover rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
           />

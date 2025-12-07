@@ -28,11 +28,11 @@ export class CreateClinicSettingDto {
 
   @ApiProperty({
     example: '{"mon":"9-18"}',
-    description: 'Working hours in JSON',
+    description: 'Working hours',
   })
   @IsNotEmpty()
-  @IsObject()
-  readonly working_hours: object;
+  @IsString()
+  readonly working_hours: string;
 
   @ApiProperty({ example: '41.311081,69.240562', description: 'Map location' })
   @IsNotEmpty()

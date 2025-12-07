@@ -4,7 +4,7 @@
   >
     <div class="p-4 flex flex-col items-center">
       <img
-        :src="`http://localhost:3000/uploads/${specialist.photo}`"
+        :src="`http://localhost:3001/uploads/${specialist.photo}`"
         alt="mutaxassis rasmi"
         class="w-20 h-20 rounded-full object-cover shadow mb-3"
       />

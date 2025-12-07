@@ -74,7 +74,7 @@
                 @click="openEditModal(u)"
                 class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
               >
-                <Edit3 class="w-4 h-4" />
+                <Edit2 class="w-4 h-4" />
               </button>
               <button
                 @click="openDeleteModal(u)"
@@ -108,7 +108,7 @@
           @click="openEditModal(u)"
           class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
         >
-          <Edit3 class="w-4 h-4" />
+          <Edit2 class="w-4 h-4" />
         </button>
         <button
           @click="openDeleteModal(u)"
@@ -120,18 +120,28 @@
 
       <div class="pr-12">
         <h3 class="text-lg font-semibold text-gray-800">{{ u.full_name }}</h3>
-        <span
-          :class="[
-            'inline-block mt-1 px-2 py-1 rounded-full text-xs font-semibold',
-            u.role === 'admin'
-              ? 'bg-red-100 text-red-600'
-              : u.role === 'specialist'
-              ? 'bg-blue-100 text-blue-600'
-              : 'bg-green-100 text-green-600',
-          ]"
-        >
-          {{ u.role || "—" }}
-        </span>
+
+        <div class="flex items-center gap-2 mt-1">
+          <span
+            class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+          >
+            ID: {{ u.id }}
+          </span>
+
+          <span
+            :class="[
+              'inline-block px-2 py-0.5 rounded-full text-xs font-semibold',
+              u.role === 'admin'
+                ? 'bg-red-100 text-red-600'
+                : u.role === 'specialist'
+                ? 'bg-blue-100 text-blue-600'
+                : 'bg-green-100 text-green-600',
+            ]"
+          >
+            {{ u.role || "—" }}
+          </span>
+        </div>
+
         <p class="text-sm text-gray-600 mt-2">📞 {{ formatPhone(u.phone) }}</p>
         <p class="text-sm text-gray-600">✉️ {{ u.email }}</p>
         <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
@@ -171,7 +181,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
-import { Users, Trash2, Edit3 } from "lucide-vue-next";
+import { Users, Trash2, Edit2 } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 

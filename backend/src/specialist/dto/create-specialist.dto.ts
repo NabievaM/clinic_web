@@ -4,13 +4,15 @@ import {
   IsOptional,
   IsString,
   IsIn,
-  IsUUID,
+  IsNumber,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateSpecialistDto {
   @ApiProperty({ example: 'uuid-user-id', description: 'Related user ID' })
   @IsNotEmpty()
-  @IsUUID()
+  @Type(() => Number)
+  @IsNumber()
   user_id: number;
 
   @ApiProperty({

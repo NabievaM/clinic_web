@@ -26,12 +26,8 @@
         r="10"
         stroke="currentColor"
         stroke-width="4"
-      ></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8H4z"
-      ></path>
+      />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
     </svg>
     Yuklanmoqda...
   </div>
@@ -55,7 +51,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="s in [...serviceStore.services].sort((a, b) => a.id - b.id)"
+          v-for="s in sortedServices"
           :key="s.id"
           class="hover:bg-gray-50 transition"
         >
@@ -84,12 +80,20 @@
             {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
           <td class="px-4 py-3 text-right">
-            <button
-              @click="openDeleteModal(s)"
-              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
-            >
-              <Trash2 class="w-4 h-4" />
-            </button>
+            <div class="flex items-center justify-end gap-2">
+              <button
+                @click="openEditModal(s)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition"
+              >
+                <Edit2 class="w-4 h-4" />
+              </button>
+              <button
+                @click="openDeleteModal(s)"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
+              >
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -100,32 +104,49 @@
     v-if="!serviceStore.loading && serviceStore.services.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary">
+    <div class="flex gap-2 font-bold text-primary items-center">
       <h2 class="text-xl">Xizmatlar ro‘yxati</h2>
       <Stethoscope class="w-5 h-7" />
     </div>
+
     <div
-      v-for="s in [...serviceStore.services].sort((a, b) => a.id - b.id)"
+      v-for="s in sortedServices"
       :key="s.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(s)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openEditModal(s)"
+          class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition"
+        >
+          <Edit2 class="w-4 h-4" />
+        </button>
+        <button
+          @click="openDeleteModal(s)"
+          class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
-      <div class="flex justify-between items-center mb-2 pr-10">
-        <h3 class="text-lg font-semibold text-gray-800">{{ s.name }}</h3>
+      <h3 class="text-lg font-semibold text-gray-800 pr-10">{{ s.name }}</h3>
+
+      <div class="flex items-center gap-2 mt-1">
+        <span
+          class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+        >
+          ID: {{ s.id }}
+        </span>
+
         <span
           v-if="s.is_popular"
-          class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded-full font-semibold"
+          class="inline-flex items-center justify-center gap-1 px-2 py-0.5 bg-yellow-100 text-yellow-600 text-xs rounded-full font-semibold"
         >
           ⭐ Mashhur
         </span>
       </div>
-      <p class="text-sm text-gray-600">💰 {{ formatPrice(s.price) }}</p>
+
+      <p class="text-sm text-gray-600 mt-2">💰 {{ formatPrice(s.price) }}</p>
       <p class="text-sm text-gray-600">⏱ {{ s.duration }} daqiqa</p>
       <p class="text-sm text-gray-600">📝 {{ s.description }}</p>
       <p class="text-xs text-gray-500 mt-2">
@@ -143,6 +164,16 @@
 
   <ServiceForm v-model="showModal" :form="form" @submit="submitForm" />
 
+  <EditModal
+    :visible="showEdit"
+    title="Xizmatni tahrirlash"
+    :formData="editServiceData"
+    :fields="editFields"
+    :error="editFormError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -153,18 +184,24 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useServiceStore } from "@/stores/service";
-import { Stethoscope, Plus, Trash2 } from "lucide-vue-next";
+import { Stethoscope, Plus, Trash2, Edit2 } from "lucide-vue-next";
 import ServiceForm from "@/components/admin/ServiceForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 
 const serviceStore = useServiceStore();
+
 const showModal = ref(false);
 const showDelete = ref(false);
+const showEdit = ref(false);
+
 const deleteServiceData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+const editServiceData = ref({});
+const editFormError = ref("");
 
 const form = ref({
   name: "",
@@ -174,13 +211,52 @@ const form = ref({
   is_popular: false,
 });
 
+const editFields = [
+  {
+    label: "Xizmat nomi",
+    model: "name",
+    type: "text",
+    placeholder: "Masalan: Tish tozalash",
+  },
+  {
+    label: "Narxi (so‘m)",
+    model: "price",
+    type: "number",
+    placeholder: "100000",
+  },
+  {
+    label: "Davomiyligi (daqiqalarda)",
+    model: "duration",
+    type: "number",
+    placeholder: "30",
+  },
+  {
+    label: "Tavsif",
+    model: "description",
+    type: "textarea",
+    placeholder: "Xizmat haqida qisqacha ma’lumot...",
+  },
+  {
+    label: "Mashhur",
+    model: "is_popular",
+    type: "select",
+    options: [
+      { value: true, label: "Ha" },
+      { value: false, label: "Yo‘q" },
+    ],
+  },
+];
+
+const sortedServices = computed(() =>
+  [...serviceStore.services].sort((a, b) => a.id - b.id)
+);
+
 onMounted(() => {
   serviceStore.fetchServices();
 });
 
 function formatPrice(price) {
-  if (!price) return "0 so‘m";
-  return new Intl.NumberFormat("uz-UZ").format(price) + " so‘m";
+  return new Intl.NumberFormat("uz-UZ").format(price || 0) + " so‘m";
 }
 
 async function submitForm(data) {
@@ -197,6 +273,35 @@ async function submitForm(data) {
   }
 }
 
+function openEditModal(service) {
+  editServiceData.value = { ...service };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updatedService) {
+  editFormError.value = "";
+
+  if (typeof updatedService.is_popular === "string") {
+    updatedService.is_popular = updatedService.is_popular === "true";
+  }
+
+  const { ok, message } = await serviceStore.editService(
+    updatedService.id,
+    updatedService
+  );
+
+  if (!ok) {
+    editFormError.value = message;
+  } else {
+    showEdit.value = false;
+    await serviceStore.fetchServices();
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
+}
+
 function openDeleteModal(service) {
   deleteServiceData.value = service;
   deleteTitle.value = "Xizmatni o‘chirish";
@@ -205,10 +310,10 @@ function openDeleteModal(service) {
 }
 
 async function confirmDelete() {
-  const { ok, message } = await serviceStore.deleteServiceById(
-    deleteServiceData.value.id
-  );
-  if (!ok) console.error(message);
+  const success = await serviceStore.removeService(deleteServiceData.value.id);
+  if (success) {
+    await serviceStore.fetchServices();
+  }
   showDelete.value = false;
 }
 

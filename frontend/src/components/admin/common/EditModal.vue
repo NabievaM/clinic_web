@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-3"
   >
     <div
-      class="relative bg-white rounded-2xl p-5 w-full max-w-md shadow-xl transform transition-all duration-300 animate-fadeIn sm:mx-4 sm:w-full overflow-hidden"
+      class="relative bg-white rounded-2xl p-4 w-full max-w-md shadow-xl transform transition-all duration-300 animate-fadeIn"
     >
       <button
         @click="cancel"
@@ -13,9 +13,9 @@
         ✕
       </button>
 
-      <div class="flex items-center gap-3 mb-4">
+      <div class="flex items-center gap-2 mb-3">
         <div
-          class="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary"
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary"
         >
           <Edit class="w-5 h-5" />
         </div>
@@ -31,51 +31,48 @@
         ❌ {{ formError }}
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4 overflow-visible">
+      <form @submit.prevent="handleSubmit" class="grid grid-cols-2 gap-4">
         <div
           v-for="(field, index) in fields"
           :key="index"
-          class="space-y-1.5 relative"
+          :class="[
+            'space-y-1.5 relative',
+            field.colSpan === 2 ? 'col-span-2' : 'col-span-1',
+          ]"
         >
-          <label class="text-sm font-medium text-gray-700">{{
-            field.label
-          }}</label>
+          <label class="text-sm font-medium text-gray-700">
+            {{ field.label }}
+          </label>
 
           <input
-            v-if="
-              ['text', 'email', 'number'].includes(field.type) &&
-              field.model !== 'phone'
-            "
+            v-if="['text', 'email', 'number'].includes(field.type)"
             v-model="localForm[field.model]"
             :type="field.type"
             :placeholder="field.placeholder"
-            class="w-full border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition text-gray-700"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
           />
 
           <input
-            v-else-if="field.model === 'phone'"
-            v-model="displayPhone"
-            type="tel"
-            placeholder="+998 (__) ___-__-__"
-            maxlength="19"
-            @input="formatPhone"
-            class="w-full border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition text-gray-700"
+            v-else-if="field.type === 'file'"
+            type="file"
+            accept="image/*"
+            @change="onFileChange($event, field.model)"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
           />
 
           <div v-else-if="field.type === 'select'" class="relative">
             <div
               @click="toggleDropdown(field.model)"
-              class="w-full border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 cursor-pointer focus:ring-1 focus:ring-primary focus:border-primary outline-none transition text-gray-700 flex justify-between items-center hover:bg-gray-100"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 cursor-pointer flex justify-between items-center hover:bg-gray-100"
             >
               <span>
                 {{
-                  localForm[field.model]
-                    ? field.options.find(
-                        (opt) => opt.value === localForm[field.model]
-                      )?.label
-                    : "Tanlang..."
+                  field.options.find(
+                    (opt) => opt.value === localForm[field.model]
+                  )?.label || "Tanlang..."
                 }}
               </span>
+
               <svg
                 class="w-4 h-4 text-gray-400"
                 xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +92,7 @@
             <transition name="fade">
               <ul
                 v-if="openDropdown === field.model"
-                class="w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 mb-3 pb-2 max-h-[200px] overflow-auto"
+                class="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-[180px] overflow-auto"
               >
                 <li
                   v-for="option in field.options"
@@ -113,12 +110,12 @@
             v-else-if="field.type === 'textarea'"
             v-model="localForm[field.model]"
             :placeholder="field.placeholder"
-            rows="3"
-            class="w-full border border-gray-200 rounded-lg px-3 py-2.5 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition text-gray-700"
+            rows="2"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition resize-none"
           ></textarea>
         </div>
 
-        <div class="flex justify-end gap-2 pt-4 border-t">
+        <div class="col-span-2 flex justify-end gap-2 pt-4 border-t">
           <button
             type="button"
             @click="cancel"
@@ -155,25 +152,6 @@ const emit = defineEmits(["save", "cancel"]);
 const localForm = ref({ ...props.formData });
 const formError = ref("");
 const openDropdown = ref(null);
-const displayPhone = ref("");
-
-function formatPhone(e) {
-  let value = e.target.value.replace(/\D/g, "");
-  if (value.startsWith("998")) value = value.slice(3);
-  if (value.length > 9) value = value.slice(0, 9);
-  let formatted = "+998 ";
-  if (value.length > 0) formatted += "(" + value.substring(0, 2);
-  if (value.length >= 2) formatted += ") ";
-  if (value.length >= 5) {
-    formatted += value.substring(2, 5) + "-";
-    formatted += value.substring(5, 7);
-    if (value.length >= 7) formatted += "-" + value.substring(7, 9);
-  } else if (value.length > 2) {
-    formatted += value.substring(2, 5);
-  }
-  displayPhone.value = formatted;
-  localForm.value.phone = "998" + value;
-}
 
 function toggleDropdown(model) {
   openDropdown.value = openDropdown.value === model ? null : model;
@@ -185,18 +163,20 @@ function selectOption(model, value) {
 }
 
 function handleClickOutside(e) {
-  if (!e.target.closest(".relative")) {
-    openDropdown.value = null;
+  if (!e.target.closest(".relative")) openDropdown.value = null;
+}
+
+function onFileChange(e, model) {
+  const file = e.target.files[0];
+  if (file) {
+    localForm.value[model] = file;
   }
 }
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
+onMounted(() => document.addEventListener("click", handleClickOutside));
+onBeforeUnmount(() =>
+  document.removeEventListener("click", handleClickOutside)
+);
 
 watch(
   () => props.visible,
@@ -205,35 +185,18 @@ watch(
       localForm.value = { ...props.formData };
       formError.value = "";
       openDropdown.value = null;
-      if (localForm.value.phone) {
-        const digits = localForm.value.phone.replace(/\D/g, "").slice(3);
-        let formatted = "+998 ";
-        if (digits.length > 0) formatted += "(" + digits.substring(0, 2);
-        if (digits.length >= 2) formatted += ") ";
-        if (digits.length >= 5) {
-          formatted += digits.substring(2, 5) + "-";
-          formatted += digits.substring(5, 7);
-          if (digits.length >= 7) formatted += "-" + digits.substring(7, 9);
-        } else if (digits.length > 2) {
-          formatted += digits.substring(2, 5);
-        }
-        displayPhone.value = formatted;
-      }
     }
   }
 );
 
 watch(
   () => props.error,
-  (val) => {
-    formError.value = val || "";
-  }
+  (val) => (formError.value = val || "")
 );
 
 function handleSubmit() {
   emit("save", { ...localForm.value });
 }
-
 function cancel() {
   emit("cancel");
 }

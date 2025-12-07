@@ -6,7 +6,7 @@
       <div class="flex items-center space-x-4">
         <img
           v-if="clinic?.logo_url"
-          :src="`http://localhost:3000/uploads/${clinic.logo_url}`"
+          :src="`http://localhost:3001/uploads/${clinic.logo_url}`"
           alt="logo"
           class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-md"
         />

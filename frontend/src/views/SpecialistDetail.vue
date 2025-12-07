@@ -24,7 +24,7 @@
       <div class="flex flex-col md:flex-row items-start gap-12">
         <div class="flex-shrink-0 w-full md:w-1/3">
           <img
-            :src="`http://localhost:3000/uploads/${specialist.photo}`"
+            :src="`http://localhost:3001/uploads/${specialist.photo}`"
             alt="mutaxassis rasmi"
             class="w-full h-[400px] object-cover rounded-2xl shadow-md"
           />
@@ -51,17 +51,14 @@
             >
               {{ specialist.specialization }}
             </span>
+          </div>
 
-            <div class="flex flex-wrap gap-2 items-center">
-              <span class="font-semibold text-gray-800 mr-2">Ish kunlari:</span>
-              <span
-                v-for="(day, index) in specialist.working_days.split('\\n')"
-                :key="index"
-                class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm"
-              >
-                {{ day }}
-              </span>
-            </div>
+          <div
+            v-if="specialist.working_days"
+            class="bg-green-100 text-green-700 px-4 py-1.5 rounded-lg text-sm whitespace-pre-line mb-8"
+          >
+            <p class="text-lg font-medium">Ish kunlari:</p>
+            {{ specialist.working_days }}
           </div>
 
           <p class="text-gray-700 text-lg leading-relaxed">

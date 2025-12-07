@@ -52,7 +52,9 @@
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
           <td class="px-4 py-3">{{ s.specialist.user.full_name }}</td>
-          <td class="px-4 py-3">{{ s.service.name }}</td>
+          <td class="px-4 py-3">
+            {{ s.service.name }}
+          </td>
           <td class="px-4 py-3 text-gray-600">
             {{ formatPrice(s.service.price) }}
           </td>
@@ -70,6 +72,7 @@
               >
                 Batafsil
               </router-link>
+
               <button
                 @click="openDeleteModal(s)"
                 class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
@@ -87,9 +90,9 @@
     v-if="!store.loading && store.specialists.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary">
-      <h2 class="text-xl">Mutaxassis xizmatlari</h2>
-      <Stethoscope class="w-5 h-7" />
+    <div class="flex gap-2 font-bold text-primary mb-2 items-center">
+      <Stethoscope class="w-5 h-5" />
+      <h2 class="text-lg">Mutaxassis xizmatlari</h2>
     </div>
 
     <div
@@ -97,16 +100,26 @@
       :key="s.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(s)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openDeleteModal(s)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
-      <h2 class="text-base font-semibold text-primary mb-1">
-        🛠 {{ s.service.name }}
+      <h2
+        class="text-base font-semibold text-primary mb-1 flex items-center gap-2"
+      >
+        <span
+          class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+        >
+          ID: {{ s.id }}
+        </span>
+        {{ s.service.name }}
       </h2>
+
       <p class="text-sm text-gray-600 mb-2">
         💰 {{ formatPrice(s.service.price) }} — ⏱
         {{ s.service.duration }} daqiqa
@@ -115,7 +128,7 @@
       <div class="flex items-center gap-3 mb-2">
         <img
           v-if="s.specialist.photo"
-          :src="`http://localhost:3000/uploads/${s.specialist.photo}`"
+          :src="`http://localhost:3001/uploads/${s.specialist.photo}`"
           alt="photo"
           class="w-16 h-16 rounded-full object-cover"
         />

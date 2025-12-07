@@ -9,7 +9,7 @@
       >
         <img
           v-if="clinic?.logo_url"
-          :src="`http://localhost:3000/uploads/${clinic.logo_url}`"
+          :src="`http://localhost:3001/uploads/${clinic.logo_url}`"
           alt="logo"
           class="w-10 h-10 rounded-full object-cover shadow-sm"
         />

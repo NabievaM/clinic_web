@@ -33,10 +33,10 @@ export class ClinicSetting extends Model<ClinicSetting> {
 
   @ApiProperty({
     example: '{"mon":"9-18","tue":"9-18"}',
-    description: 'Working hours in JSON format',
+    description: 'Working hours',
   })
-  @Column({ type: DataType.JSON, allowNull: false })
-  declare working_hours: object;
+  @Column({ type: DataType.STRING, allowNull: false })
+  declare working_hours: string;
 
   @ApiProperty({
     example: '41.311081,69.240562',

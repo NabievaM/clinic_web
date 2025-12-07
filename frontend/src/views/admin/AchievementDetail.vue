@@ -87,6 +87,6 @@ onMounted(() => {
 });
 
 function getImageUrl(image) {
-  return `http://localhost:3000/uploads/${image}`;
+  return `http://localhost:3001/uploads/${image}`;
 }
 </script>

@@ -43,7 +43,7 @@
         <div class="flex-shrink-0 w-full md:w-1/3">
           <img
             v-if="mapping.specialist?.photo"
-            :src="`http://localhost:3000/uploads/${mapping.specialist.photo}`"
+            :src="`http://localhost:3001/uploads/${mapping.specialist.photo}`"
             alt="mutaxassis rasmi"
             class="w-full h-[400px] object-cover rounded-2xl shadow-md"
           />
@@ -72,17 +72,12 @@
             </span>
           </div>
 
-          <div class="mb-6">
-            <div class="font-semibold text-gray-800 mb-2">Ish kunlari:</div>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="(day, index) in workingDays"
-                :key="index"
-                class="bg-green-50 text-green-700 px-4 py-1.5 rounded-lg text-sm font-medium border border-green-100"
-              >
-                {{ day }}
-              </span>
-            </div>
+          <div
+            v-if="mapping?.specialist?.working_days"
+            class="bg-green-100 mb-6 text-green-700 py-1.5 px-4 rounded-lg text-sm whitespace-pre-line"
+          >
+            <p class="text-lg font-medium">Ish kunlari:</p>
+            {{ mapping.specialist.working_days }}
           </div>
 
           <p class="text-gray-700 text-lg leading-relaxed mb-6">
@@ -126,11 +121,6 @@ onMounted(async () => {
     return;
   }
   await store.fetchMapping(route.params.id);
-});
-
-const workingDays = computed(() => {
-  const wd = mapping.value?.specialist?.working_days || "";
-  return wd.split("\\n").filter(Boolean);
 });
 
 function formatPrice(price) {

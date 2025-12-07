@@ -92,11 +92,11 @@ export class UsersService {
     const newUser = await this.userRepo.create({
       ...(createUserDto as unknown as CreationAttributes<User>),
       password_hash: hashedPassword,
+      role: Role.Patient,
     });
 
     const tokens = await this.getTokens(newUser);
     const hashedRefreshToken = await bcrypt.hash(tokens.refresh_token, 7);
-
     await newUser.update({ hashed_refresh_token: hashedRefreshToken });
 
     res.cookie('refresh_token', tokens.refresh_token, {
@@ -183,9 +183,7 @@ export class UsersService {
   async search(keyword: string) {
     return this.userRepo.findAll({
       where: {
-        full_name: {
-          [Op.iLike]: `%${keyword}%`,
-        },
+        full_name: { [Op.iLike]: `%${keyword}%` },
       },
       order: [['full_name', 'ASC']],
     });
@@ -204,19 +202,14 @@ export class UsersService {
       );
     }
 
-    if (
-      dto.role &&
-      dto.role === Role.Admin &&
-      currentUser.role !== Role.Admin
-    ) {
-      throw new ForbiddenException('Siz rolni adminga o‘zgartira olmaysiz');
+    if (dto.role && currentUser.role !== Role.Admin) {
+      delete dto.role;
     }
 
     if (dto.phone && dto.phone !== user.phone) {
       const existingPhone = await this.userRepo.findOne({
         where: { phone: dto.phone },
       });
-
       if (existingPhone) {
         throw new BadRequestException({
           message: 'Ushbu telefon raqam allaqachon mavjud!',
@@ -229,7 +222,6 @@ export class UsersService {
       const existingEmail = await this.userRepo.findOne({
         where: { email: dto.email },
       });
-
       if (existingEmail) {
         throw new BadRequestException({
           message: 'Ushbu email allaqachon mavjud!',
@@ -247,18 +239,12 @@ export class UsersService {
         dto.currentPassword,
         user.password_hash,
       );
-
       if (!isOldPassValid) {
         throw new UnauthorizedException('Eski parol noto‘g‘ri');
       }
 
-      dto.password = await bcrypt.hash(dto.password, 7);
-      dto.password_hash = dto.password;
+      dto.password_hash = await bcrypt.hash(dto.password, 7);
       delete dto.password;
-    }
-
-    if (dto.role && currentUser.role !== Role.Admin) {
-      delete dto.role;
     }
 
     await user.update(dto);
@@ -266,16 +252,15 @@ export class UsersService {
   }
 
   async refreshTokenFromCookie(refreshToken: string) {
-    if (!refreshToken) {
+    if (!refreshToken)
       throw new UnauthorizedException('Refresh token topilmadi');
-    }
 
     let payload;
     try {
       payload = await this.jwtService.verifyAsync(refreshToken, {
         secret: process.env.REFRESH_TOKEN_KEY,
       });
-    } catch (e) {
+    } catch {
       throw new UnauthorizedException('Refresh token noto‘g‘ri');
     }
 

@@ -222,18 +222,7 @@ function handleSubmit() {
     return;
   }
 
-  const formData = new FormData();
-  Object.keys(localForm.value).forEach((key) => {
-    let value = localForm.value[key];
-    if (key === "user_id" && value !== undefined && value !== null) {
-      value = parseInt(value);
-    }
-    if (value !== undefined && value !== null) {
-      formData.append(key, value);
-    }
-  });
-
-  emit("submit", formData, (error) => {
+  emit("submit", localForm.value, (error) => {
     formError.value = error;
   });
 }
