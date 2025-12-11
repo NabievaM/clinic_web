@@ -1,4 +1,3 @@
 <template>
-    <div>Statistika sahifasi</div>
-  </template>
-  
+  <div>Statistika sahifasi</div>
+</template>

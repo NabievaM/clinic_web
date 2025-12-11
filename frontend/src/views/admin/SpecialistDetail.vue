@@ -72,7 +72,7 @@
     :visible="showEditModal"
     title="Rasmni tahrirlash"
     :formData="{ photo: null }"
-    :fields="[{ label: 'Rasm', model: 'photo', type: 'file' }]"
+    :fields="[{ label: 'Rasm', model: 'photo', type: 'file', colSpan: 2 }]"
     :error="error"
     @save="handlePhotoSave"
     @cancel="showEditModal = false"

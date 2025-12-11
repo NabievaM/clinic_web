@@ -75,7 +75,7 @@
 
               <button
                 @click="openDeleteModal(s)"
-                class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
               >
                 <Trash2 class="w-4 h-4" />
               </button>

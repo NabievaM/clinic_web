@@ -160,7 +160,7 @@ export class AnalysisResultService {
     await result.update(dto);
     return result;
   }
-
+  
   async remove(id: number, currentUser: any): Promise<{ message: string }> {
     const result = await this.analysisModel.findByPk(id);
 

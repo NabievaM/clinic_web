@@ -71,9 +71,17 @@
               >
                 Batafsil
               </router-link>
+
+              <button
+                @click="openEditModal(a)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+              >
+                <Edit2 class="w-4 h-4" />
+              </button>
+
               <button
                 @click="openDeleteModal(a)"
-                class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
               >
                 <Trash2 class="w-4 h-4" />
               </button>
@@ -98,14 +106,23 @@
       :key="a.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(a)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openEditModal(a)"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+        >
+          <Edit2 class="w-4 h-4" />
+        </button>
 
-      <p class="text-sm font-semibold text-gray-800">🏆 {{ a.title }}</p>
+        <button
+          @click="openDeleteModal(a)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
+
+      <p class="text-sm font-semibold text-gray-800 w-56">🏆{{ a.title }}</p>
       <p class="text-xs text-gray-500 mt-1">
         🗓 {{ new Date(a.achieved_date).toLocaleDateString("uz-UZ") }}
       </p>
@@ -128,6 +145,16 @@
 
   <AchievementForm v-model="showModal" :form="form" @submit="submitForm" />
 
+  <EditModal
+    :visible="showEdit"
+    title="Yutuqni tahrirlash"
+    :formData="editData"
+    :fields="editFields"
+    :error="editError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -139,17 +166,23 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { Plus, Award, Trash2 } from "lucide-vue-next";
+import { Plus, Award, Trash2, Edit2 } from "lucide-vue-next";
 import { useAchievementStore } from "@/stores/achievement";
 import AchievementForm from "@/components/admin/AchievementForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 
 const achievementStore = useAchievementStore();
 const showModal = ref(false);
+const showEdit = ref(false);
 const showDelete = ref(false);
+
 const deleteAchievementData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+
+const editData = ref({});
+const editError = ref("");
 
 const form = ref({
   title: "",
@@ -157,6 +190,11 @@ const form = ref({
   achieved_date: "",
   image: "",
 });
+
+const editFields = [
+  { label: "Sarlavha", model: "title", type: "text", colSpan: 2 },
+  { label: "Tavsif", model: "description", type: "text", colSpan: 2 },
+];
 
 const sortedAchievements = computed(() =>
   [...achievementStore.achievements].sort((a, b) => a.id - b.id)
@@ -175,6 +213,26 @@ async function submitForm(data, setError) {
   } catch (error) {
     setError(error.message);
   }
+}
+
+function openEditModal(achievement) {
+  editData.value = { ...achievement };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updated) {
+  editError.value = "";
+  try {
+    await achievementStore.editAchievement(updated.id, updated);
+    showEdit.value = false;
+    await achievementStore.getAchievements();
+  } catch (e) {
+    editError.value = e.message || "Xatolik yuz berdi";
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
 }
 
 function openDeleteModal(achievement) {

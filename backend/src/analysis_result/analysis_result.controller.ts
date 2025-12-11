@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  Patch,
   Delete,
   Param,
   Body,
@@ -84,7 +84,7 @@ export class AnalysisResultController {
     return this.analysisService.findOne(id, req.user);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Update an analysis result by ID' })
   @ApiResponse({
     status: 200,

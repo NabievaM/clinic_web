@@ -23,6 +23,13 @@
   </div>
 
   <div
+    v-if="bookingStore.error"
+    class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg"
+  >
+    ❌ {{ bookingStore.error }}
+  </div>
+
+  <div
     v-if="!bookingStore.loading && bookingStore.bookings.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
@@ -59,7 +66,9 @@
                 'px-2 py-1 rounded-full text-xs font-semibold',
                 b.status === 'pending'
                   ? 'bg-yellow-100 text-yellow-600'
-                  : b.status === 'approved'
+                  : b.status === 'confirmed'
+                  ? 'bg-blue-100 text-blue-600'
+                  : b.status === 'completed'
                   ? 'bg-green-100 text-green-600'
                   : 'bg-red-100 text-red-600',
               ]"
@@ -68,12 +77,21 @@
             </span>
           </td>
           <td class="px-4 py-3 text-right">
-            <button
-              @click="openDeleteModal(b)"
-              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
-            >
-              <Trash2 class="w-4 h-4" />
-            </button>
+            <div class="flex justify-end gap-2">
+              <button
+                @click="openEditModal(b)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+              >
+                <Edit2 class="w-4 h-4" />
+              </button>
+
+              <button
+                @click="openDeleteModal(b)"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+              >
+                <Trash2 class="w-4 h-4" />
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -94,12 +112,21 @@
       :key="b.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(b)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openEditModal(b)"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500"
+        >
+          <Edit2 class="w-4 h-4" />
+        </button>
+
+        <button
+          @click="openDeleteModal(b)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
       <div class="flex justify-between items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold text-gray-800">Bron #{{ b.id }}</h3>
@@ -108,7 +135,9 @@
             'px-2 py-1 rounded-full text-xs font-semibold',
             b.status === 'pending'
               ? 'bg-yellow-100 text-yellow-600'
-              : b.status === 'approved'
+              : b.status === 'confirmed'
+              ? 'bg-blue-100 text-blue-600'
+              : b.status === 'completed'
               ? 'bg-green-100 text-green-600'
               : 'bg-red-100 text-red-600',
           ]"
@@ -138,6 +167,16 @@
     Hech qanday booking topilmadi 🙅‍♂️
   </div>
 
+  <EditModal
+    :visible="showEdit"
+    title="Bronni tahrirlash"
+    :formData="editData"
+    :fields="editFields"
+    :error="editError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -150,14 +189,43 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useBookingStore } from "@/stores/booking";
-import { FileText, Trash2 } from "lucide-vue-next";
+import { FileText, Trash2, Edit2 } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 
 const bookingStore = useBookingStore();
 const showDelete = ref(false);
+const showEdit = ref(false);
 const deleteData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+
+const editData = ref({});
+const editError = ref("");
+const dropdownOpen = ref(false);
+
+const statuses = [
+  { value: "pending", label: "Kutilmoqda" },
+  { value: "confirmed", label: "Tasdiqlangan" },
+  { value: "completed", label: "Yakunlangan" },
+  { value: "cancelled", label: "Bekor qilingan" },
+];
+
+const editFields = [
+  {
+    label: "Status",
+    model: "status",
+    type: "select",
+    options: statuses,
+    colSpan: 2,
+  },
+  {
+    label: "Qabul vaqti",
+    model: "booking_datetime",
+    type: "datetime-local",
+    colSpan: 2,
+  },
+];
 
 onMounted(() => {
   bookingStore.getBookings();
@@ -191,5 +259,25 @@ async function confirmDelete() {
 
 function cancelDelete() {
   showDelete.value = false;
+}
+
+function openEditModal(b) {
+  editData.value = { ...b };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updated) {
+  editError.value = "";
+  try {
+    await bookingStore.editBooking(updated.id, updated);
+    showEdit.value = false;
+    await bookingStore.getBookings();
+  } catch (e) {
+    editError.value = e.message || "Xatolik yuz berdi";
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
 }
 </script>

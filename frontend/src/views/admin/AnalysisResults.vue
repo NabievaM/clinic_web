@@ -70,9 +70,17 @@
               >
                 Batafsil
               </router-link>
+
+              <button
+                @click="openEditModal(r)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+              >
+                <Edit2 class="w-4 h-4" />
+              </button>
+
               <button
                 @click="openDeleteModal(r)"
-                class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
               >
                 <Trash2 class="w-4 h-4" />
               </button>
@@ -97,12 +105,21 @@
       :key="r.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(r)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openEditModal(r)"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600"
+        >
+          <Edit2 class="w-4 h-4" />
+        </button>
+
+        <button
+          @click="openDeleteModal(r)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
       <p class="text-sm font-semibold text-gray-800">📌 {{ r.description }}</p>
       <p class="text-xs text-gray-500 mt-1">
@@ -127,6 +144,16 @@
 
   <AnalysisResultForm v-model="showModal" :form="form" @submit="submitForm" />
 
+  <EditModal
+    :visible="showEdit"
+    title="Natijani tahrirlash"
+    :formData="editData"
+    :fields="editFields"
+    :error="editError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -139,16 +166,27 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
-import { Plus, TestTube2, Trash2 } from "lucide-vue-next";
+import { Plus, TestTube2, Trash2, Edit2 } from "lucide-vue-next";
 import AnalysisResultForm from "@/components/admin/AnalysisResultForm.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 
 const analysisStore = useAnalysisResultStore();
 const showModal = ref(false);
 const showDelete = ref(false);
+const showEdit = ref(false);
+
 const deleteData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+
+const editData = ref({});
+const editError = ref("");
+
+const editFields = [
+  { label: "Booking ID", model: "booking_id", type: "text" },
+  { label: "Izoh", model: "description", type: "text" },
+];
 
 const form = ref({
   booking_id: "",
@@ -171,6 +209,26 @@ async function submitForm(data, setError) {
       setError(error.message);
     }
   }
+}
+
+function openEditModal(r) {
+  editData.value = { ...r };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updated) {
+  editError.value = "";
+  try {
+    await analysisStore.updateResult(updated.id, updated);
+    showEdit.value = false;
+    await analysisStore.getResults();
+  } catch (e) {
+    editError.value = e.message || "Xatolik yuz berdi";
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
 }
 
 function openDeleteModal(result) {

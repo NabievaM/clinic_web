@@ -64,7 +64,7 @@
           <td class="px-4 py-3 text-right">
             <button
               @click="openDeleteModal(acc)"
-              class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
+              class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
             >
               <Trash2 class="w-4 h-4" />
             </button>

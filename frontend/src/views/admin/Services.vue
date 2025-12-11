@@ -117,13 +117,13 @@
       <div class="absolute top-3 right-3 flex gap-2">
         <button
           @click="openEditModal(s)"
-          class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition"
         >
           <Edit2 class="w-4 h-4" />
         </button>
         <button
           @click="openDeleteModal(s)"
-          class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
         >
           <Trash2 class="w-4 h-4" />
         </button>

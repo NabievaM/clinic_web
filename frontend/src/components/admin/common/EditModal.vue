@@ -55,7 +55,7 @@
           <input
             v-else-if="field.type === 'file'"
             type="file"
-            accept="image/*"
+            accept="field.accept"   
             @change="onFileChange($event, field.model)"
             class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
           />

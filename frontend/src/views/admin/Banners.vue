@@ -23,12 +23,8 @@
         r="10"
         stroke="currentColor"
         stroke-width="4"
-      ></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8H4z"
-      ></path>
+      />
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
     </svg>
     Yuklanmoqda...
   </div>
@@ -72,9 +68,17 @@
               >
                 Batafsil
               </router-link>
+
+              <button
+                @click="openEditModal(b)"
+                class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+              >
+                <Edit2 class="w-4 h-4" />
+              </button>
+
               <button
                 @click="openDeleteModal(b)"
-                class="flex items-center justify-center w-6 h-6 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+                class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
               >
                 <Trash2 class="w-4 h-4" />
               </button>
@@ -99,12 +103,21 @@
       :key="b.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
-      <button
-        @click="openDeleteModal(b)"
-        class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="absolute top-3 right-3 flex gap-2">
+        <button
+          @click="openEditModal(b)"
+          class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
+        >
+          <Edit2 class="w-4 h-4" />
+        </button>
+
+        <button
+          @click="openDeleteModal(b)"
+          class="flex items-center justify-center w-8 h-8 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
 
       <p class="text-sm font-semibold text-gray-800">📌 {{ b.title }}</p>
       <p class="text-xs text-gray-500 mt-1">
@@ -129,6 +142,16 @@
 
   <BannerForm v-model="showModal" :form="form" @submit="submitForm" />
 
+  <EditModal
+    :visible="showEdit"
+    title="Bannerni tahrirlash"
+    :formData="editData"
+    :fields="editFields"
+    :error="editError"
+    @save="confirmEdit"
+    @cancel="cancelEdit"
+  />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -141,16 +164,20 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useBannerStore } from "@/stores/useBannerStore";
-import { Image, Plus, Trash2 } from "lucide-vue-next";
+import { Image, Plus, Trash2, Edit2 } from "lucide-vue-next";
 import BannerForm from "@/components/admin/BannerForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import EditModal from "@/components/admin/common/EditModal.vue";
 
 const bannerStore = useBannerStore();
 const showModal = ref(false);
+const showEdit = ref(false);
 const showDelete = ref(false);
 const deleteBannerData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+const editData = ref({});
+const editError = ref("");
 
 const form = ref({
   title: "",
@@ -158,6 +185,12 @@ const form = ref({
   display_order: "",
   image: "",
 });
+
+const editFields = [
+  { label: "Sarlavha", model: "title", type: "text" },
+  { label: "Qo‘shimcha matn", model: "subtitle", type: "text" },
+  { label: "Tartib raqami", model: "display_order", type: "number" },
+];
 
 onMounted(() => {
   bannerStore.getBanners();
@@ -172,6 +205,26 @@ async function submitForm(data, setError) {
   } catch (error) {
     if (typeof setError === "function") setError(error.message);
   }
+}
+
+function openEditModal(banner) {
+  editData.value = { ...banner };
+  showEdit.value = true;
+}
+
+async function confirmEdit(updated) {
+  editError.value = "";
+  try {
+    await bannerStore.editBanner(updated.id, updated);
+    showEdit.value = false;
+    await bannerStore.getBanners();
+  } catch (e) {
+    editError.value = e.message || "Xatolik yuz berdi";
+  }
+}
+
+function cancelEdit() {
+  showEdit.value = false;
 }
 
 function openDeleteModal(banner) {

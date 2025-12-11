@@ -13,7 +13,7 @@ export const createAnalysisResult = (formData) =>
   });
 
 export const updateAnalysisResult = (id, formData) =>
-  api.put(`/analysis-result/${id}`, formData, {
+  api.patch(`/analysis-result/${id}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
