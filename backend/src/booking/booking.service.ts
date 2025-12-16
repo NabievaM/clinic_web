@@ -40,6 +40,29 @@ export class BookingService {
     } as any);
   }
 
+  async findAllForSpecialist(currentUser: any) {
+    if (currentUser.role !== Role.Specialist) {
+      throw new ForbiddenException('Faqat mutaxassislar uchun');
+    }
+
+    const specialist = await this.specialistModel.findOne({
+      where: { user_id: currentUser.userId },
+    });
+
+    if (!specialist) {
+      throw new NotFoundException('Specialist topilmadi');
+    }
+
+    return this.bookingModel.findAll({
+      where: { specialist_id: specialist.id },
+      include: [
+        { association: 'user', attributes: ['full_name'] },
+        { association: 'service', attributes: ['name'] },
+      ],
+      order: [['booking_datetime', 'DESC']],
+    });
+  }
+
   async findAll(): Promise<any[]> {
     const bookings = await this.bookingModel.findAll({
       include: [
@@ -57,12 +80,12 @@ export class BookingService {
           ],
         },
         {
-          association: 'service', 
+          association: 'service',
           attributes: ['name'],
         },
       ],
       // attributes: {
-      //   exclude: ['user_id', 'specialist_id', 'service_id'], 
+      //   exclude: ['user_id', 'specialist_id', 'service_id'],
       // },
     });
 

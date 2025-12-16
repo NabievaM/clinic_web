@@ -128,7 +128,7 @@
         </button>
       </div>
 
-      <div class="flex justify-between items-center mb-2 pr-10">
+      <div class="flex gap-2 items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold text-gray-800">Bron #{{ b.id }}</h3>
         <span
           :class="[
@@ -217,12 +217,6 @@ const editFields = [
     model: "status",
     type: "select",
     options: statuses,
-    colSpan: 2,
-  },
-  {
-    label: "Qabul vaqti",
-    model: "booking_datetime",
-    type: "datetime-local",
     colSpan: 2,
   },
 ];

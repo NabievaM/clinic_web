@@ -69,6 +69,13 @@ export class AnalysisResultController {
     return this.analysisService.findAll();
   }
 
+  @Get('/specialist/analysis-results/all')
+  @Roles(Role.Specialist)
+  @ApiOperation({ summary: 'Get all analysis results for current specialist' })
+  async findAllForSpecialist(@Req() req: any) {
+    return this.analysisService.findAllForSpecialist(req.user);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get an analysis result by ID' })
   @ApiResponse({

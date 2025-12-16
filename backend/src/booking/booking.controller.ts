@@ -49,6 +49,13 @@ export class BookingController {
     return this.bookingService.findAll();
   }
 
+  @Get('/specialist/bookings/all')
+  @Roles(Role.Specialist)
+  @ApiOperation({ summary: 'Get all bookings for current specialist' })
+  async findAllForSpecialist(@Request() req: any) {
+    return this.bookingService.findAllForSpecialist(req.user);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get booking details by ID' })
   @ApiParam({ name: 'id', type: Number, description: 'Booking ID' })

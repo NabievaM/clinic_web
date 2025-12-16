@@ -75,6 +75,31 @@ export class AnalysisResultService {
     return results;
   }
 
+  async findAllForSpecialist(currentUser: any) {
+    if (currentUser.role !== Role.Specialist) {
+      throw new ForbiddenException('Faqat mutaxassislar uchun');
+    }
+
+    const specialist = await this.specialistModel.findOne({
+      where: { user_id: currentUser.userId },
+    });
+
+    if (!specialist) {
+      throw new NotFoundException('Specialist topilmadi');
+    }
+
+    return this.analysisModel.findAll({
+      include: [
+        {
+          model: Booking,
+          where: { specialist_id: specialist.id },
+          attributes: [],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
   async findOne(id: number, currentUser: any): Promise<AnalysisResult> {
     const result = await this.analysisModel.findByPk(id);
     if (!result) {
@@ -160,7 +185,7 @@ export class AnalysisResultService {
     await result.update(dto);
     return result;
   }
-  
+
   async remove(id: number, currentUser: any): Promise<{ message: string }> {
     const result = await this.analysisModel.findByPk(id);
 

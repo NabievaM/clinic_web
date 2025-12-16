@@ -50,12 +50,55 @@
         >
           Bog‘lanish
         </RouterLink>
+
         <RouterLink
           to="/profile"
           class="nav-link"
           :class="{ active: current === 'profile' }"
         >
           Mening Profilim
+        </RouterLink>
+
+        <RouterLink
+          v-if="auth.user?.role === 'admin'"
+          to="/admin/dashboard"
+          class="nav-link bg-primary px-2 py-1 rounded-lg !text-white hover:scale-105"
+        >
+          Admin panel
+        </RouterLink>
+
+        <RouterLink
+          v-if="auth.user?.role === 'specialist'"
+          :to="`/specialist/${auth.user.id}/bookings`"
+          class="nav-link"
+          :class="{ active: current === 'booking' }"
+        >
+          Bronlar
+        </RouterLink>
+
+        <RouterLink
+          v-if="auth.user?.role === 'specialist'"
+          :to="`/specialist/${auth.user.id}/analysis-results`"
+          class="nav-link"
+          :class="{ active: current === 'analysis' }"
+        >
+          Analiz natijalari
+        </RouterLink>
+
+        <RouterLink
+          v-if="auth.user?.role === 'patient'"
+          to="/specialist/appointments"
+          class="nav-link"
+        >
+          Bronlarim
+        </RouterLink>
+
+        <RouterLink
+          v-if="auth.user?.role === 'patient'"
+          to="/specialist/analysis"
+          class="nav-link"
+        >
+          Analiz natijalarim
         </RouterLink>
       </nav>
 
@@ -124,6 +167,48 @@
             :class="{ active: current === 'profile' }"
             >Mening Profilim</RouterLink
           >
+
+          <RouterLink
+            v-if="auth.user?.role === 'admin'"
+            to="/admin/dashboard"
+            class="mobile-link"
+          >
+            Admin panel
+          </RouterLink>
+
+          <RouterLink
+            v-if="auth.user?.role === 'specialist'"
+            :to="`/specialist/${auth.user.id}/bookings`"
+            class="mobile-link"
+            :class="{ active: current === 'booking' }"
+          >
+            Bronlar
+          </RouterLink>
+
+          <RouterLink
+            v-if="auth.user?.role === 'specialist'"
+            :to="`/specialist/${auth.user.id}/analysis-results`"
+            class="mobile-link"
+            :class="{ active: current === 'analysis' }"
+          >
+            Analiz natijalari
+          </RouterLink>
+
+          <RouterLink
+            v-if="auth.user?.role === 'patient'"
+            to="/specialist/appointments"
+            class="mobile-link"
+          >
+            Bronlarim
+          </RouterLink>
+
+          <RouterLink
+            v-if="auth.user?.role === 'patient'"
+            to="/specialist/analysis"
+            class="mobile-link"
+          >
+            Analiz natijalarim
+          </RouterLink>
         </nav>
       </div>
     </transition>
@@ -134,8 +219,10 @@
 import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useClinicStore } from "@/stores/clinic";
+import { useAuthStore } from "@/stores/auth";
 import { useRoute } from "vue-router";
 
+const auth = useAuthStore();
 const isOpen = ref(false);
 const route = useRoute();
 
@@ -145,6 +232,10 @@ const current = computed(() => {
   if (route.path.startsWith("/specialists")) return "specialists";
   if (route.path.startsWith("/contact")) return "contact";
   if (route.path.startsWith("/profile")) return "profile";
+  if (route.path.startsWith(`/specialist/${auth.user.id}/bookings`))
+    return "booking";
+  if (route.path.startsWith(`/specialist/${auth.user.id}/analysis-results`))
+    return "analysis";
 
   return "";
 });

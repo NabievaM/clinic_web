@@ -5,6 +5,7 @@ import {
   createBooking,
   updateBooking,
   deleteBooking,
+  fetchBookingsForSpecialist
 } from "@/api/booking";
 
 export const useBookingStore = defineStore("booking", {
@@ -24,6 +25,19 @@ export const useBookingStore = defineStore("booking", {
         this.bookings = data;
       } catch (err) {
         this.error = err.message || "Bookinglarni olishda xatolik";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getBookingsForSpecialist() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await fetchBookingsForSpecialist();
+        this.bookings = data;
+      } catch (err) {
+        this.error = err.message || "Mutaxassis bookinglarini olishda xatolik";
       } finally {
         this.loading = false;
       }

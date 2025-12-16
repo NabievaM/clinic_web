@@ -11,3 +11,5 @@ export const updateBooking = (id, payload) =>
 
 export const deleteBooking = (id) => api.delete(`/booking/${id}`);
 
+export const fetchBookingsForSpecialist = () =>
+  api.get("/booking/specialist/bookings/all");

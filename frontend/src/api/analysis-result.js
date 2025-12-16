@@ -21,3 +21,6 @@ export const updateAnalysisResult = (id, formData) =>
 
 export const deleteAnalysisResult = (id) =>
   api.delete(`/analysis-result/${id}`);
+
+export const fetchAnalysisResultsForSpecialist = () =>
+  api.get("/analysis-result/specialist/analysis-results/all");

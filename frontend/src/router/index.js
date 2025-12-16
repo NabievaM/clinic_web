@@ -30,6 +30,9 @@ import AnalysisResults from "@/views/admin/AnalysisResults.vue";
 import ClinicSettings from "@/views/admin/ClinicSettings.vue";
 import SpecialistServiceDetail from "@/views/admin/SpecialistServiceDetail.vue";
 import AnalysisResultDetail from "@/views/admin/AnalysisResultDetail.vue";
+import SpecialistAnalysis from "@/views/specialist/AnalysisResults.vue";
+import SpecialistBookings from "@/views/specialist/Bookings.vue";
+import SpecialistAnalysisDetail from "@/views/specialist/AnalysisResultDetail.vue";
 
 const routes = [
   { path: "/", name: "Home", component: HomeView },
@@ -42,6 +45,27 @@ const routes = [
     name: "SpecialistDetail",
     component: SpecialistDetail,
     props: true,
+  },
+  {
+    path: "/specialist/:id/analysis-results",
+    name: "SpecialistAnalysis",
+    component: SpecialistAnalysis,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/specialist/analysis-results/:id",
+    name: "SpecialistAnalysisDetail",
+    component: SpecialistAnalysisDetail,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/specialist/:id/bookings",
+    name: "SpecialistBookings",
+    component: SpecialistBookings,
+    props: true,
+    meta: { requiresAuth: true },
   },
   {
     path: "/profile",
