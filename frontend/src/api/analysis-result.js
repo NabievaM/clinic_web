@@ -24,3 +24,6 @@ export const deleteAnalysisResult = (id) =>
 
 export const fetchAnalysisResultsForSpecialist = () =>
   api.get("/analysis-result/specialist/analysis-results/all");
+
+export const fetchAnalysisResultsForPatient = () =>
+  api.get("/analysis-result/patient/analysis-results/all");

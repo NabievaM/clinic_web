@@ -50,7 +50,7 @@ export class BookingService {
     });
 
     if (!specialist) {
-      throw new NotFoundException('Specialist topilmadi');
+      throw new NotFoundException('Mutaxassis topilmadi');
     }
 
     return this.bookingModel.findAll({
@@ -58,6 +58,32 @@ export class BookingService {
       include: [
         { association: 'user', attributes: ['full_name'] },
         { association: 'service', attributes: ['name'] },
+      ],
+      order: [['booking_datetime', 'DESC']],
+    });
+  }
+
+  async findAllForPatient(currentUser: any) {
+    if (currentUser.role !== Role.Patient) {
+      throw new ForbiddenException('Faqat patientlar uchun');
+    }
+
+    return this.bookingModel.findAll({
+      where: { user_id: currentUser.userId },
+      include: [
+        {
+          association: 'specialist',
+          include: [
+            {
+              association: 'user',
+              attributes: ['full_name'],
+            },
+          ],
+        },
+        {
+          association: 'service',
+          attributes: ['name'],
+        },
       ],
       order: [['booking_datetime', 'DESC']],
     });
@@ -163,6 +189,12 @@ export class BookingService {
       if (booking.user_id !== currentUser.userId) {
         throw new ForbiddenException(
           'Siz faqat o‘zingiz yaratgan bookinglarni yangilashingiz mumkin!',
+        );
+      }
+
+      if (updateBookingDto.status && updateBookingDto.status !== 'cancelled') {
+        throw new ForbiddenException(
+          'Patient faqat bookingni bekor qilishi mumkin',
         );
       }
     }

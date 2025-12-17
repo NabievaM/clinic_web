@@ -77,7 +77,7 @@
           <b>ID:</b> {{ analysisStore.result.id }}
         </div>
         <div class="bg-gray-50 p-3 rounded shadow-sm">
-          <b>Booking ID:</b> {{ analysisStore.result.booking_id }}
+          <b>Bron raqami:</b> {{ analysisStore.result.booking_id }}
         </div>
         <div class="bg-gray-50 p-3 rounded shadow-sm">
           <b>Qo‘shilgan sana:</b>

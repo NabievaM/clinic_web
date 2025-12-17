@@ -1,16 +1,6 @@
 <template>
   <AppLayout>
     <div class="max-w-7xl mx-auto px-6 py-2">
-      <div class="flex justify-end mb-2">
-        <button
-          @click="showModal = true"
-          class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
-        >
-          <Plus class="w-4 h-4" />
-          <span>Analiz natija qo‘shish</span>
-        </button>
-      </div>
-
       <div
         v-if="analysisStore.loading"
         class="flex items-center gap-2 text-gray-500"
@@ -42,6 +32,7 @@
         ❌ {{ analysisStore.error }}
       </div>
 
+      <!-- Desktop table -->
       <div
         v-if="!analysisStore.loading && analysisStore.results.length"
         class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
@@ -72,27 +63,19 @@
                 {{ formatDate(r.createdAt) }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center justify-center gap-2">
-                  <router-link
-                    :to="`/specialist/analysis-results/${r.id}`"
-                    class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                  >
-                    Batafsil
-                  </router-link>
-
-                  <button
-                    @click="openEditModal(r)"
-                    class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
-                  >
-                    <Edit2 class="w-4 h-4" />
-                  </button>
-                </div>
+                <router-link
+                  :to="`/patient/analysis-results/${r.id}`"
+                  class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                >
+                  Batafsil
+                </router-link>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      <!-- Mobile view -->
       <div
         v-if="!analysisStore.loading && analysisStore.results.length"
         class="space-y-4 md:hidden"
@@ -107,20 +90,13 @@
           :key="r.id"
           class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
         >
-          <button
-            @click="openEditModal(r)"
-            class="absolute top-3 right-3 flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500"
-          >
-            <Edit2 class="w-4 h-4" />
-          </button>
-
           <p class="text-sm font-semibold">📌 {{ r.description }}</p>
           <p class="text-xs text-gray-500 mt-1">
             🗓 {{ formatDate(r.createdAt) }}
           </p>
 
           <router-link
-            :to="`/specialist/analysis-results/${r.id}`"
+            :to="`/patient/analysis-results/${r.id}`"
             class="inline-block mt-3 px-3 py-1 bg-blue-500 text-white text-sm rounded"
           >
             Batafsil
@@ -130,84 +106,58 @@
 
       <div
         v-if="!analysisStore.loading && !analysisStore.results.length"
-        class="text-gray-500 mt-4 text-center"
+        class="my-10 flex flex-col items-center justify-center text-center"
       >
-        Hech qanday analiz natijasi topilmadi 🙅‍♂️
+        <div
+          class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-10 h-10 text-primary"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-1">
+          Hozircha analiz natijalari yo‘q
+        </h3>
+
+        <p class="text-sm text-gray-500 max-w-sm mb-5">
+          Qabuldan so‘ng analiz natijalaringiz shu yerda paydo bo‘ladi
+        </p>
+
+        <router-link
+          to="/services"
+          class="px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-medium shadow hover:shadow-lg hover:bg-primary/90 transition"
+        >
+          Qabulga yozilish
+        </router-link>
       </div>
     </div>
-
-    <AnalysisResultForm v-model="showModal" :form="form" @submit="submitForm" />
-
-    <EditModal
-      :visible="showEdit"
-      title="Natijani tahrirlash"
-      :formData="editData"
-      :fields="editFields"
-      :error="editError"
-      @save="confirmEdit"
-      @cancel="showEdit = false"
-    />
   </AppLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
-import { Plus, TestTube2, Edit2 } from "lucide-vue-next";
+import { TestTube2 } from "lucide-vue-next";
 import AppLayout from "@/layouts/AppLayout.vue";
-import AnalysisResultForm from "@/components/admin/AnalysisResultForm.vue";
-import EditModal from "@/components/admin/common/EditModal.vue";
 
 const analysisStore = useAnalysisResultStore();
 
-const showModal = ref(false);
-const showEdit = ref(false);
-const editData = ref({});
-const editError = ref("");
-
-const form = ref({
-  booking_id: "",
-  file_url: "",
-  description: "",
-});
-
-const editFields = [
-  { label: "Bron raqami", model: "booking_id", type: "text" },
-  { label: "Izoh", model: "description", type: "text" },
-];
-
 onMounted(() => {
-  analysisStore.getResultsForSpecialist();
+  analysisStore.getResultsForPatient();
 });
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString("uz-UZ");
-}
-
-async function submitForm(data, setError) {
-  try {
-    await analysisStore.addResult(data);
-    showModal.value = false;
-    form.value = { booking_id: "", file_url: "", description: "" };
-    await analysisStore.getResultsForSpecialist();
-  } catch (e) {
-    setError?.(e.message);
-  }
-}
-
-function openEditModal(r) {
-  editData.value = { ...r };
-  showEdit.value = true;
-}
-
-async function confirmEdit(updated) {
-  editError.value = "";
-  try {
-    await analysisStore.updateResult(updated.id, updated);
-    showEdit.value = false;
-    await analysisStore.getResultsForSpecialist();
-  } catch (e) {
-    editError.value = e.message || "Xatolik yuz berdi";
-  }
 }
 </script>

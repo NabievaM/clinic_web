@@ -44,7 +44,7 @@
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
           <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Booking ID</th>
+          <th class="px-4 py-3">Bron raqami</th>
           <th class="px-4 py-3">Izoh</th>
           <th class="px-4 py-3">Qo‘shilgan sana</th>
           <th class="px-4 py-3">Amallar</th>
@@ -184,7 +184,7 @@ const editData = ref({});
 const editError = ref("");
 
 const editFields = [
-  { label: "Booking ID", model: "booking_id", type: "text" },
+  { label: "Bron raqami", model: "booking_id", type: "text" },
   { label: "Izoh", model: "description", type: "text" },
 ];
 

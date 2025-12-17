@@ -85,7 +85,7 @@ export class AnalysisResultService {
     });
 
     if (!specialist) {
-      throw new NotFoundException('Specialist topilmadi');
+      throw new NotFoundException('Mutaxassis topilmadi');
     }
 
     return this.analysisModel.findAll({
@@ -93,6 +93,23 @@ export class AnalysisResultService {
         {
           model: Booking,
           where: { specialist_id: specialist.id },
+          attributes: [],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+  }
+
+  async findAllForPatient(currentUser: any) {
+    if (currentUser.role !== Role.Patient) {
+      throw new ForbiddenException('Faqat bemorlar uchun');
+    }
+
+    return this.analysisModel.findAll({
+      include: [
+        {
+          model: Booking,
+          where: { user_id: currentUser.userId },
           attributes: [],
         },
       ],

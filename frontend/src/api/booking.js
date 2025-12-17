@@ -13,3 +13,6 @@ export const deleteBooking = (id) => api.delete(`/booking/${id}`);
 
 export const fetchBookingsForSpecialist = () =>
   api.get("/booking/specialist/bookings/all");
+
+export const fetchBookingsForPatient = () =>
+  api.get("/booking/patient/bookings/all");

@@ -33,7 +33,7 @@
 
       <form @submit.prevent="handleSubmit" class="space-y-3">
         <div class="space-y-1.5">
-          <label class="text-sm font-medium text-gray-700">Booking ID</label>
+          <label class="text-sm font-medium text-gray-700">Bron raqami</label>
           <input
             v-model.number="localForm.booking_id"
             type="number"
@@ -134,7 +134,7 @@ function handleSubmit() {
   let hasError = false;
 
   if (!localForm.value.booking_id) {
-    fieldErrors.value.booking_id = "Booking ID kiritish majburiy!";
+    fieldErrors.value.booking_id = "Bron raqamini kiritish majburiy!";
     hasError = true;
   }
 

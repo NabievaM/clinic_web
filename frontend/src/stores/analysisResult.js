@@ -6,6 +6,7 @@ import {
   updateAnalysisResult,
   deleteAnalysisResult,
   fetchAnalysisResultsForSpecialist,
+  fetchAnalysisResultsForPatient,
 } from "@/api/analysis-result";
 
 export const useAnalysisResultStore = defineStore("analysis_result", {
@@ -44,6 +45,22 @@ export const useAnalysisResultStore = defineStore("analysis_result", {
           err.response?.data?.message ||
           err.message ||
           "Mutaxassis analiz natijasini olishda xatolik";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getResultsForPatient() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const res = await fetchAnalysisResultsForPatient();
+        this.results = res.data;
+      } catch (err) {
+        this.error =
+          err.response?.data?.message ||
+          err.message ||
+          "Bemor analiz natijalarini olishda xatolik";
       } finally {
         this.loading = false;
       }

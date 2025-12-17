@@ -87,16 +87,18 @@
 
         <RouterLink
           v-if="auth.user?.role === 'patient'"
-          to="/specialist/appointments"
+          :to="`/patient/${auth.user.id}/bookings`"
           class="nav-link"
+          :class="{ active: current === 'booking' }"
         >
           Bronlarim
         </RouterLink>
 
         <RouterLink
           v-if="auth.user?.role === 'patient'"
-          to="/specialist/analysis"
+          :to="`/patient/${auth.user.id}/analysis-results`"
           class="nav-link"
+          :class="{ active: current === 'analysis' }"
         >
           Analiz natijalarim
         </RouterLink>
@@ -196,16 +198,18 @@
 
           <RouterLink
             v-if="auth.user?.role === 'patient'"
-            to="/specialist/appointments"
+            :to="`/patient/${auth.user.id}/bookings`"
             class="mobile-link"
+            :class="{ active: current === 'booking' }"
           >
             Bronlarim
           </RouterLink>
 
           <RouterLink
             v-if="auth.user?.role === 'patient'"
-            to="/specialist/analysis"
+            :to="`/patient/${auth.user.id}/analysis-results`"
             class="mobile-link"
+            :class="{ active: current === 'analysis' }"
           >
             Analiz natijalarim
           </RouterLink>
@@ -216,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useClinicStore } from "@/stores/clinic";
 import { useAuthStore } from "@/stores/auth";
@@ -232,16 +236,28 @@ const current = computed(() => {
   if (route.path.startsWith("/specialists")) return "specialists";
   if (route.path.startsWith("/contact")) return "contact";
   if (route.path.startsWith("/profile")) return "profile";
-  if (route.path.startsWith(`/specialist/${auth.user.id}/bookings`))
+
+  if (
+    route.path.startsWith(`/specialist/${auth.user?.id}/bookings`) ||
+    route.path.startsWith(`/patient/${auth.user?.id}/bookings`)
+  ) {
     return "booking";
-  if (route.path.startsWith(`/specialist/${auth.user.id}/analysis-results`))
+  }
+
+  if (
+    route.path.startsWith(`/specialist/${auth.user?.id}/analysis-results`) ||
+    route.path.startsWith(`/patient/${auth.user?.id}/analysis-results`)
+  ) {
     return "analysis";
+  }
 
   return "";
 });
 
 const store = useClinicStore();
-store.getClinic();
+onMounted(() => {
+  store.getClinic();
+});
 const { clinic } = storeToRefs(store);
 </script>
 

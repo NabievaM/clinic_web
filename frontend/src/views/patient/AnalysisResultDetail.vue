@@ -17,7 +17,7 @@
     <div class="w-full flex justify-start mb-6">
       <router-link
         :to="{
-          name: 'SpecialistAnalysis',
+          name: 'PatientAnalysis',
           params: { id: $route.params.id },
         }"
         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg shadow hover:bg-gray-200 text-sm transition"
