@@ -102,6 +102,8 @@ export class UsersService {
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 15 * 24 * 60 * 60 * 1000,
       httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
     });
 
     return {
@@ -111,7 +113,7 @@ export class UsersService {
     };
   }
 
-  async login(dto: LoginUserDto) {
+  async login(dto: LoginUserDto, res: Response) {
     if ((!dto.email && !dto.phone) || !dto.password) {
       throw new BadRequestException(
         'Iltimos, barcha majburiy maydonlarni to‘ldiring.',
@@ -156,6 +158,13 @@ export class UsersService {
     const hashedRefreshToken = await bcrypt.hash(tokens.refresh_token, 7);
     await user!.update({ hashed_refresh_token: hashedRefreshToken });
 
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+
     return {
       message: 'Tizimga muvaffaqiyatli kirildi',
       tokens,
@@ -173,7 +182,7 @@ export class UsersService {
 
     await this.userRepo.update(
       { hashed_refresh_token: null },
-      { where: { id: UserData.id } },
+      { where: { id: UserData.sub } },
     );
 
     res.clearCookie('refresh_token');
@@ -264,7 +273,7 @@ export class UsersService {
       throw new UnauthorizedException('Refresh token noto‘g‘ri');
     }
 
-    const user = await this.userRepo.findByPk(payload.id);
+    const user = await this.userRepo.findByPk(payload.sub);
     if (!user || !user.hashed_refresh_token) {
       throw new UnauthorizedException('Ruxsat rad etildi');
     }

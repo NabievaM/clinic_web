@@ -49,8 +49,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Login with email or phone' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  login(@Body() dto: LoginUserDto) {
-    return this.usersService.login(dto);
+  login(@Body() dto: LoginUserDto, @Res({ passthrough: true }) res: Response) {
+    return this.usersService.login(dto, res);
   }
 
   @Post('logout')
@@ -97,6 +97,8 @@ export class UsersController {
         res.cookie('refresh_token', tokens.refresh_token, {
           maxAge: 15 * 24 * 60 * 60 * 1000,
           httpOnly: true,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
         });
         return tokens;
       });
