@@ -27,4 +27,9 @@ export default [
     icon: "Building2",
   },
   { to: "/admin/socials", label: "Ijtimoiy tarmoqlar", icon: "Share2" },
+  {
+    to: "/admin/user-messages",
+    label: "Xabarlar",
+    icon: "Mail",
+  },
 ];

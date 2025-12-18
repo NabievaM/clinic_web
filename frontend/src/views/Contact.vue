@@ -128,45 +128,57 @@
                 Savol yoki takliflaringizni qoldiring, biz tez orada siz bilan
                 bog‘lanamiz.
               </p>
-              <form class="space-y-5">
+
+              <form @submit.prevent="submitForm" class="space-y-5">
                 <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1"
-                    >Ism</label
-                  >
+                  <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Ism
+                  </label>
                   <input
+                    v-model="form.name"
                     type="text"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                     placeholder="Ismingizni kiriting"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1"
-                    >Telefon</label
-                  >
+                  <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Telefon
+                  </label>
                   <input
+                    v-imask="phoneMask"
+                    :value="form.phone"
+                    @accept="onPhoneAccept"
                     type="tel"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                    placeholder="+998 90 123 45 67"
+                    placeholder="+998 (__) ___-__-__"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-600 mb-1"
-                    >Xabar</label
-                  >
+                  <label class="block text-sm font-medium text-gray-600 mb-1">
+                    Xabar
+                  </label>
                   <textarea
+                    v-model="form.message"
                     rows="4"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
                     placeholder="Xabaringizni yozing..."
+                    required
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
-                  class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium shadow-md hover:from-blue-700 hover:to-blue-800 transition"
+                  :disabled="userMessageStore.loading"
+                  class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium shadow-md hover:from-blue-700 hover:to-blue-800 transition disabled:opacity-60"
                 >
-                  Yuborish
+                  {{
+                    userMessageStore.loading ? "Yuborilmoqda..." : "Yuborish"
+                  }}
                 </button>
               </form>
             </div>
@@ -174,14 +186,24 @@
         </div>
       </div>
     </div>
+
+    <transition name="fade">
+      <div
+        v-if="showToast"
+        class="fixed bottom-6 right-6 bg-green-400 text-white px-6 py-3 rounded-xl shadow-lg"
+      >
+        Xabaringiz yuborildi!
+      </div>
+    </transition>
   </AppLayout>
 </template>
 
 <script setup>
 import { storeToRefs } from "pinia";
-import { onMounted } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useClinicStore } from "@/stores/clinic";
 import { useSocialAccountStore } from "@/stores/socialAccount";
+import { useUserMessageStore } from "@/stores/userMessage";
 import { MapPin, Phone, Mail, Clock } from "lucide-vue-next";
 import AppLayout from "../layouts/AppLayout.vue";
 
@@ -193,7 +215,54 @@ const socialStore = useSocialAccountStore();
 const { accounts } = storeToRefs(socialStore);
 const { getSocialAccounts } = socialStore;
 
+const userMessageStore = useUserMessageStore();
+
+const form = reactive({
+  name: "",
+  phone: "",
+  message: "",
+});
+
+const showToast = ref(false);
+
+const phoneMask = {
+  mask: "+{998} (00) 000-00-00",
+  lazy: false,
+};
+
+const onPhoneAccept = (e) => {
+  form.phone = e.detail.value;
+};
+
+const submitForm = async () => {
+  await userMessageStore.sendMessage({
+    name: form.name,
+    phone: form.phone.replace(/\D/g, ""),
+    message: form.message,
+  });
+
+  form.name = "";
+  form.phone = "";
+  form.message = "";
+
+  showToast.value = true;
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
+};
+
 onMounted(() => {
   getSocialAccounts();
 });
 </script>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

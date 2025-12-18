@@ -30,9 +30,13 @@ import AnalysisResults from "@/views/admin/AnalysisResults.vue";
 import ClinicSettings from "@/views/admin/ClinicSettings.vue";
 import SpecialistServiceDetail from "@/views/admin/SpecialistServiceDetail.vue";
 import AnalysisResultDetail from "@/views/admin/AnalysisResultDetail.vue";
+import UserMessages from "@/views/admin/UserMessages.vue";
+import UserMessageDetail from "@/views/admin/UserMessageDetail.vue";
+
 import SpecialistAnalysis from "@/views/specialist/AnalysisResults.vue";
 import SpecialistBookings from "@/views/specialist/Bookings.vue";
 import SpecialistAnalysisDetail from "@/views/specialist/AnalysisResultDetail.vue";
+
 import PatientAnalysis from "@/views/patient/AnalysisResults.vue";
 import PatientBookings from "@/views/patient/Bookings.vue";
 import PatientAnalysisDetail from "@/views/patient/AnalysisResultDetail.vue";
@@ -156,6 +160,17 @@ const routes = [
         path: "banner/:id",
         name: "AdminBannerDetail",
         component: BannerDetail,
+      },
+      {
+        path: "user-messages",
+        name: "AdminUserMessages",
+        component: UserMessages,
+      },
+      {
+        path: "user-messages/:id",
+        name: "AdminUserMessageDetail",
+        component: UserMessageDetail,
+        props: true,
       },
     ],
   },

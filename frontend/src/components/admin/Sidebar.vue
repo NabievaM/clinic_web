@@ -60,6 +60,7 @@ const icons = {
   Award: LucideIcons.Award,
   Building2: LucideIcons.Building2,
   Share2: LucideIcons.Share2,
+  Mail: LucideIcons.Mail,
 };
 
 function handleNavClick() {

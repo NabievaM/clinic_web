@@ -26,7 +26,9 @@ import { AnalysisResult } from './analysis_result/analysis_result.model';
 import { StatisticsModule } from './statistics/statistics.module';
 import { Statistics } from './statistics/statistic.model';
 import { SpecialistServiceModule } from './specialist_service/specialist_service.module';
-import {SpecialistService} from './specialist_service/specialist_service.model';
+import { SpecialistService } from './specialist_service/specialist_service.model';
+import { UserMessageModule } from './user_message/user_message.module';
+import { UserMessage } from './user_message/user_message.model';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -52,7 +54,8 @@ import {SpecialistService} from './specialist_service/specialist_service.model';
         Booking,
         AnalysisResult,
         Statistics,
-        SpecialistService
+        SpecialistService,
+        UserMessage,
       ],
       autoLoadModels: true,
       logging: false,
@@ -71,6 +74,7 @@ import {SpecialistService} from './specialist_service/specialist_service.model';
     AnalysisResultModule,
     StatisticsModule,
     SpecialistServiceModule,
+    UserMessageModule,
   ],
   controllers: [],
   providers: [],
