@@ -54,7 +54,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="a in sortedAchievements"
+          v-for="a in paginatedAchievements"
           :key="a.id"
           class="hover:bg-gray-50 transition"
         >
@@ -102,7 +102,7 @@
     </div>
 
     <div
-      v-for="a in sortedAchievements"
+      v-for="a in paginatedAchievements"
       :key="a.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -136,6 +136,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="achievementStore.achievements.length > limit"
+    :total="achievementStore.achievements.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!achievementStore.loading && !achievementStore.achievements.length"
     class="text-gray-500 mt-4 text-center"
@@ -165,14 +173,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { Plus, Award, Trash2, Edit2 } from "lucide-vue-next";
 import { useAchievementStore } from "@/stores/achievement";
+import Pagination from "@/components/common/Pagination.vue";
 import AchievementForm from "@/components/admin/AchievementForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 
 const achievementStore = useAchievementStore();
+
 const showModal = ref(false);
 const showEdit = ref(false);
 const showDelete = ref(false);
@@ -183,6 +193,9 @@ const deleteMessage = ref("");
 
 const editData = ref({});
 const editError = ref("");
+
+const page = ref(1);
+const limit = ref(10);
 
 const form = ref({
   title: "",
@@ -200,6 +213,21 @@ const sortedAchievements = computed(() =>
   [...achievementStore.achievements].sort((a, b) => a.id - b.id)
 );
 
+const paginatedAchievements = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return sortedAchievements.value.slice(start, start + limit.value);
+});
+
+watch(
+  () => achievementStore.achievements.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) {
+      page.value = maxPage;
+    }
+  }
+);
+
 onMounted(() => {
   achievementStore.getAchievements();
 });
@@ -215,8 +243,8 @@ async function submitForm(data, setError) {
   }
 }
 
-function openEditModal(achievement) {
-  editData.value = { ...achievement };
+function openEditModal(a) {
+  editData.value = { ...a };
   showEdit.value = true;
 }
 
@@ -235,10 +263,10 @@ function cancelEdit() {
   showEdit.value = false;
 }
 
-function openDeleteModal(achievement) {
-  deleteAchievementData.value = achievement;
+function openDeleteModal(a) {
+  deleteAchievementData.value = a;
   deleteTitle.value = "Yutuqni o‘chirish";
-  deleteMessage.value = `"${achievement.title}" yutuqni rostan ham o‘chirmoqchimisiz?`;
+  deleteMessage.value = `"${a.title}" yutuqni rostan ham o‘chirmoqchimisiz?`;
   showDelete.value = true;
 }
 

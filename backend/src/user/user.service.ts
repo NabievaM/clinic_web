@@ -303,9 +303,11 @@ export class UsersService {
     return user;
   }
 
-  async findMe(currentUser: any) {
+  async findMe(currentUser: any): Promise<User> {
     const user = await this.userRepo.findByPk(currentUser.userId);
-    if (!user) throw new NotFoundException('Foydalanuvchi topilmadi');
+    if (!user) {
+      throw new NotFoundException('Foydalanuvchi topilmadi');
+    }
     return user;
   }
 

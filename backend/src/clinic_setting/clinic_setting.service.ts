@@ -57,11 +57,7 @@ export class ClinicSettingService {
   }
 
   async findAll(): Promise<ClinicSetting[]> {
-    const clinics = await this.clinicSettingModel.findAll();
-    if (!clinics || clinics.length === 0) {
-      throw new NotFoundException('Hech qanday klinika topilmadi!');
-    }
-    return clinics;
+    return this.clinicSettingModel.findAll();
   }
 
   async findOne(id: number): Promise<ClinicSetting> {

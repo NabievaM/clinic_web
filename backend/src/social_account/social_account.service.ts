@@ -29,10 +29,11 @@ export class SocialAccountService {
       );
     }
   }
+
   async findAll(): Promise<SocialAccount[]> {
-    const accounts = await this.socialAccountRepository.findAll();
-    return accounts || [];
+    return this.socialAccountRepository.findAll();
   }
+
   async findOne(id: number): Promise<SocialAccount> {
     const account = await this.socialAccountRepository.findByPk(id);
     if (!account) {
@@ -42,6 +43,7 @@ export class SocialAccountService {
     }
     return account;
   }
+
   async update(
     id: number,
     dto: UpdateSocialAccountDto,
@@ -53,6 +55,7 @@ export class SocialAccountService {
     await account.update(dto);
     return account;
   }
+
   async remove(id: number): Promise<{ message: string }> {
     const account = await this.findOne(id);
     await account.destroy();

@@ -30,7 +30,7 @@
   </div>
 
   <div
-    v-if="!bookingStore.loading && bookingStore.bookings.length"
+    v-if="!bookingStore.loading && paginatedBookings.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
     <table class="min-w-full divide-y divide-gray-200">
@@ -48,7 +48,7 @@
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="b in [...bookingStore.bookings].sort((a, b) => a.id - b.id)"
+          v-for="b in paginatedBookings"
           :key="b.id"
           class="hover:bg-gray-50 transition"
         >
@@ -99,7 +99,7 @@
   </div>
 
   <div
-    v-if="!bookingStore.loading && bookingStore.bookings.length"
+    v-if="!bookingStore.loading && paginatedBookings.length"
     class="space-y-4 md:hidden"
   >
     <div class="flex gap-2 font-bold text-primary items-center">
@@ -108,7 +108,7 @@
     </div>
 
     <div
-      v-for="b in [...bookingStore.bookings].sort((a, b) => a.id - b.id)"
+      v-for="b in paginatedBookings"
       :key="b.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -160,6 +160,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="bookingStore.bookings.length > limit"
+    :total="bookingStore.bookings.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!bookingStore.loading && !bookingStore.bookings.length"
     class="text-gray-500 mt-4 text-center"
@@ -187,11 +195,12 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useBookingStore } from "@/stores/booking";
 import { FileText, Trash2, Edit2 } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const bookingStore = useBookingStore();
 const showDelete = ref(false);
@@ -203,6 +212,9 @@ const deleteMessage = ref("");
 const editData = ref({});
 const editError = ref("");
 const dropdownOpen = ref(false);
+
+const page = ref(1);
+const limit = ref(8);
 
 const statuses = [
   { value: "pending", label: "Kutilmoqda" },
@@ -223,6 +235,21 @@ const editFields = [
 
 onMounted(() => {
   bookingStore.getBookings();
+});
+
+watch(
+  () => bookingStore.bookings.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedBookings = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...bookingStore.bookings]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 function formatUTC(dateStr) {

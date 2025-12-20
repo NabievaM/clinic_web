@@ -69,14 +69,9 @@ export class SpecialistService {
   }
 
   async findAll(): Promise<Specialist[]> {
-    const specialists = await this.specialistRepository.findAll({
+    return this.specialistRepository.findAll({
       include: [{ model: User }],
     });
-
-    if (!specialists || specialists.length === 0) {
-      throw new NotFoundException('Hech qanday mutaxassis topilmadi!');
-    }
-    return specialists;
   }
 
   async findOne(id: number): Promise<Specialist> {

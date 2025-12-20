@@ -27,15 +27,9 @@ export class UserMessageService {
   }
 
   async findAll(): Promise<UserMessage[]> {
-    const messages = await this.userMessageModel.findAll({
+    return this.userMessageModel.findAll({
       order: [['createdAt', 'DESC']],
     });
-
-    if (!messages.length) {
-      throw new NotFoundException('Hech qanday xabar topilmadi!');
-    }
-
-    return messages;
   }
 
   async findOne(id: number): Promise<UserMessage> {

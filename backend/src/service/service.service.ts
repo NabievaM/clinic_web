@@ -35,11 +35,7 @@ export class ServiceService {
   }
 
   async findAll(): Promise<Service[]> {
-    const services = await this.serviceRepository.findAll();
-    if (!services || services.length === 0) {
-      throw new NotFoundException('Hech qanday service topilmadi!');
-    }
-    return services;
+    return this.serviceRepository.findAll();
   }
 
   async findOne(id: number): Promise<Service> {

@@ -48,14 +48,9 @@ export class BannerService {
   }
 
   async findAll(): Promise<Banner[]> {
-    const banners = await this.bannerModel.findAll({
+    return this.bannerModel.findAll({
       order: [['display_order', 'ASC']],
     });
-
-    if (!banners || banners.length === 0) {
-      throw new NotFoundException('Hech qanday banner topilmadi!');
-    }
-    return banners;
   }
 
   async findOne(id: number): Promise<Banner> {

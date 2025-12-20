@@ -25,11 +25,7 @@ export class PageContentService {
   }
 
   async findAll(): Promise<PageContent[]> {
-    const pages = await this.pageContentRepository.findAll();
-    if (!pages.length) {
-      throw new NotFoundException('Hech qanday sahifa kontenti topilmadi.');
-    }
-    return pages;
+    return this.pageContentRepository.findAll();
   }
 
   async findOne(id: number): Promise<PageContent> {

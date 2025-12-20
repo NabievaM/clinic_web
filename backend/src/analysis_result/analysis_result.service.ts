@@ -68,11 +68,7 @@ export class AnalysisResultService {
   }
 
   async findAll(): Promise<AnalysisResult[]> {
-    const results = await this.analysisModel.findAll();
-    if (!results.length) {
-      throw new NotFoundException('Hech qanday analysis result topilmadi!');
-    }
-    return results;
+    return this.analysisModel.findAll();
   }
 
   async findAllForSpecialist(currentUser: any) {

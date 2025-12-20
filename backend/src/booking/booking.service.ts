@@ -89,36 +89,18 @@ export class BookingService {
     });
   }
 
-  async findAll(): Promise<any[]> {
-    const bookings = await this.bookingModel.findAll({
+  async findAll(): Promise<Booking[]> {
+    return this.bookingModel.findAll({
       include: [
-        {
-          association: 'user',
-          attributes: ['full_name'],
-        },
+        { association: 'user', attributes: ['full_name'] },
         {
           association: 'specialist',
-          include: [
-            {
-              association: 'user',
-              attributes: ['full_name'],
-            },
-          ],
+          include: [{ association: 'user', attributes: ['full_name'] }],
         },
-        {
-          association: 'service',
-          attributes: ['name'],
-        },
+        { association: 'service', attributes: ['name'] },
       ],
-      // attributes: {
-      //   exclude: ['user_id', 'specialist_id', 'service_id'],
-      // },
+      order: [['booking_datetime', 'DESC']],
     });
-
-    if (!bookings.length) {
-      throw new NotFoundException('Hech qanday booking topilmadi!');
-    }
-    return bookings;
   }
 
   async findOne(id: number, currentUser: any): Promise<any> {

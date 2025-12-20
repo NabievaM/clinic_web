@@ -51,14 +51,9 @@ export class AchievementService {
   }
 
   async findAll(): Promise<Achievement[]> {
-    const achievements = await this.achievementModel.findAll({
+    return this.achievementModel.findAll({
       order: [['achieved_date', 'DESC']],
     });
-
-    if (!achievements || achievements.length === 0) {
-      throw new NotFoundException('Hech qanday yutuq topilmadi!');
-    }
-    return achievements;
   }
 
   async findOne(id: number): Promise<Achievement> {
