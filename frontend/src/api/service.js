@@ -6,6 +6,6 @@ export const getServiceById = (id) => api.get(`/service/${id}`);
 
 export const createService = (data) => api.post("/service/create", data);
 
-export const updateService = (id, data) => api.put(`/service/${id}`, data);
+export const updateService = (id, data) => api.patch(`/service/${id}`, data);
 
 export const deleteServiceById = (id) => api.delete(`/service/${id}`);

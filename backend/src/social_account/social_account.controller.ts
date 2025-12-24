@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  Patch,
   Delete,
   Param,
   Body,
@@ -53,7 +53,7 @@ export class SocialAccountController {
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<SocialAccount> {
     return this.socialAccountService.findOne(id);
   }
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update a social account by ID' })

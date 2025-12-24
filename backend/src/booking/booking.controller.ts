@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Patch,
   ParseIntPipe,
   UseGuards,
   Request,
@@ -79,7 +79,7 @@ export class BookingController {
     return this.bookingService.findOne(id, req.user);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Update a booking by ID' })
   @ApiParam({ name: 'id', type: Number, description: 'Booking ID' })
   @ApiResponse({

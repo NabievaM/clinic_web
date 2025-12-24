@@ -51,9 +51,15 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3">{{ s.specialist.user.full_name }}</td>
-          <td class="px-4 py-3">
-            {{ s.service.name }}
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="s.specialist.user.full_name">{{
+              s.specialist.user.full_name
+            }}</span>
+          </td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="s.service.name">
+              {{ s.service.name }}</span
+            >
           </td>
           <td class="px-4 py-3 text-gray-600">
             {{ formatPrice(s.service.price) }}

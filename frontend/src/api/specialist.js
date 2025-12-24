@@ -13,7 +13,7 @@ export const updateSpecialist = (id, data) =>
   api.patch(`/specialist/${id}`, data);
 
 export const updateSpecialistPhoto = (id, formData) =>
-  api.put(`/specialist/${id}/photo`, formData, {
+  api.patch(`/specialist/${id}/photo`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 

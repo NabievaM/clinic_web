@@ -59,7 +59,9 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ a.id }}</td>
-          <td class="px-4 py-3">{{ a.title }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="a.title">{{ a.title }}</span>
+          </td>
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(a.achieved_date).toLocaleDateString("uz-UZ") }}
           </td>

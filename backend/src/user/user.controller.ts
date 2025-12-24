@@ -4,7 +4,7 @@ import {
   Body,
   Param,
   Get,
-  Put,
+  Patch,
   Delete,
   Query,
   Res,
@@ -72,7 +72,7 @@ export class UsersController {
     return this.usersService.search(keyword);
   }
 
-  @Put(':id/update')
+  @Patch(':id/update')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin, Role.Patient, Role.Specialist)
   @ApiOperation({ summary: 'Update user profile' })

@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   Body,
-  Put,
+  Patch,
   Delete,
   UseInterceptors,
   UploadedFile,
@@ -77,7 +77,7 @@ export class AchievementController {
     return this.achievementService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update achievement by ID (excluding image)' })
@@ -95,7 +95,7 @@ export class AchievementController {
     return this.achievementService.updateById(id, updateAchievementDto);
   }
 
-  @Put(':id/image')
+  @Patch(':id/image')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update achievement image' })

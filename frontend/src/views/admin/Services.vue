@@ -56,12 +56,18 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3">{{ s.name }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="s.name">{{ s.name }}</span>
+          </td>
           <td class="px-4 py-3 text-green-600 font-semibold">
             {{ formatPrice(s.price) }}
           </td>
           <td class="px-4 py-3">{{ s.duration }} daqiqa</td>
-          <td class="px-4 py-3 text-gray-600">{{ s.description }}</td>
+          <td class="px-4 py-3 text-gray-600 max-w-[200px]">
+            <span class="block truncate" :title="s.description">{{
+              s.description
+            }}</span>
+          </td>
           <td class="px-4 py-3">
             <span
               v-if="s.is_popular"

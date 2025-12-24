@@ -9,6 +9,7 @@ import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
 import { FilesService } from '../file/file.service';
 import { ValidationError } from 'sequelize';
+import { handleDbLengthError } from '../common/utils/sequelize-error.handler';
 
 @Injectable()
 export class BannerService {
@@ -43,7 +44,8 @@ export class BannerService {
 
         throw new BadRequestException(messages.join(', '));
       }
-      throw error;
+
+      handleDbLengthError(error);
     }
   }
 
@@ -65,18 +67,25 @@ export class BannerService {
     id: number,
     updateBannerDto: UpdateBannerDto,
   ): Promise<Banner> {
-    const [count, updatedBanners] = await this.bannerModel.update(
-      updateBannerDto,
-      {
-        where: { id },
-        returning: true,
-      },
-    );
+    try {
+      const [count, updatedBanners] = await this.bannerModel.update(
+        updateBannerDto,
+        {
+          where: { id },
+          returning: true,
+        },
+      );
 
-    if (count === 0) {
-      throw new NotFoundException(`ID raqami ${id} bo'lgan banner topilmadi!`);
+      if (count === 0) {
+        throw new NotFoundException(
+          `ID raqami ${id} bo'lgan banner topilmadi!`,
+        );
+      }
+
+      return updatedBanners[0];
+    } catch (error) {
+      handleDbLengthError(error);
     }
-    return updatedBanners[0];
   }
 
   async removeFile(id: number): Promise<boolean> {

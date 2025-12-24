@@ -54,8 +54,16 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3">{{ s.user.full_name }}</td>
-          <td class="px-4 py-3">{{ s.position }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="s.user.full_name">{{
+              s.user.full_name
+            }}</span>
+          </td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="s.position">{{
+              s.position
+            }}</span>
+          </td>
           <td class="px-4 py-3">{{ s.experience_years }}</td>
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}

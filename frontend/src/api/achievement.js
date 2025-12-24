@@ -10,10 +10,10 @@ export const createAchievement = (formData) =>
   });
 
 export const updateAchievement = (id, data) =>
-  api.put(`/achievement/${id}`, data);
+  api.patch(`/achievement/${id}`, data);
 
 export const updateAchievementImage = (id, formData) =>
-  api.put(`/achievement/${id}/image`, formData, {
+  api.patch(`/achievement/${id}/image`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 

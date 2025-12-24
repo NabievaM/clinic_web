@@ -45,7 +45,11 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ m.id }}</td>
-          <td class="px-4 py-3">{{ m.name }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="m.name">
+              {{ m.name }}
+            </span>
+          </td>
           <td class="px-4 py-3">{{ formatPhone(m.phone) }}</td>
           <td class="px-4 py-3 max-w-xs truncate text-gray-600">
             {{ m.message }}

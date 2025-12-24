@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Get,
-  Put,
   Delete,
   Patch,
   Param,
@@ -100,7 +99,7 @@ export class SpecialistController {
     return this.specialistService.update(id, updateSpecialistDto);
   }
 
-  @Put(':id/photo')
+  @Patch(':id/photo')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update specialist photo (admin only)' })

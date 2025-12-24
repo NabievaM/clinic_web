@@ -5,5 +5,5 @@ export const fetchSocialAccountById = (id) => api.get(`/social-account/${id}`);
 export const createSocialAccount = (data) =>
   api.post("/social-account/create", data);
 export const updateSocialAccount = (id, data) =>
-  api.put(`/social-account/${id}`, data);
+  api.patch(`/social-account/${id}`, data);
 export const deleteSocialAccount = (id) => api.delete(`/social-account/${id}`);

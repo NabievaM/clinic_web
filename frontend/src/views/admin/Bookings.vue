@@ -53,9 +53,21 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ b.id }}</td>
-          <td class="px-4 py-3">{{ b.user?.full_name }}</td>
-          <td class="px-4 py-3">{{ b.service?.name }}</td>
-          <td class="px-4 py-3">{{ b.specialist?.user?.full_name }}</td>
+          <td class="px-4 py-3 max-w-[150px]">
+            <span class="block truncate" :title="b.user?.full_name">{{
+              b.user?.full_name
+            }}</span>
+          </td>
+          <td class="px-4 py-3 max-w-[150px]">
+            <span class="block truncate" :title="b.service?.name">{{
+              b.service?.name
+            }}</span>
+          </td>
+          <td class="px-4 py-3 max-w-[150px]">
+            <span class="block truncate" :title="b.specialist?.user?.full_name">
+              {{ b.specialist?.user?.full_name }}
+            </span>
+          </td>
           <td class="px-4 py-3 text-gray-500">
             {{ formatUTC(b.booking_datetime) }}
           </td>

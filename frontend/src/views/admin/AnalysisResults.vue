@@ -58,7 +58,11 @@
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ r.id }}</td>
           <td class="px-4 py-3">{{ r.booking_id }}</td>
-          <td class="px-4 py-3">{{ r.description }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="r.description">{{
+              r.description
+            }}</span>
+          </td>
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(r.createdAt).toLocaleDateString("uz-UZ") }}
           </td>

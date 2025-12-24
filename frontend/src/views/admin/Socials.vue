@@ -55,8 +55,14 @@
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ acc.id }}</td>
           <td class="px-4 py-3 capitalize">{{ acc.platform }}</td>
-          <td class="px-4 py-3 text-blue-600 underline">
-            <a :href="acc.url" target="_blank">{{ acc.url }}</a>
+          <td class="px-4 py-3 text-blue-600 underline max-w-[200px]">
+            <a
+              class="block truncate"
+              :title="acc.url"
+              :href="acc.url"
+              target="_blank"
+              >{{ acc.url }}</a
+            >
           </td>
           <td class="px-4 py-3 text-gray-500">
             {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
@@ -99,7 +105,7 @@
           {{ acc.platform }}
         </h3>
       </div>
-      <p class="text-sm text-blue-600 underline">
+      <p class="text-sm text-blue-600 underline break-all">
         🔗 <a :href="acc.url" target="_blank">{{ acc.url }}</a>
       </p>
       <p class="text-xs text-gray-500 mt-2">

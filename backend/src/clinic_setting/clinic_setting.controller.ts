@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  Patch,
   UploadedFile,
   UseInterceptors,
   UseGuards,
@@ -80,7 +80,7 @@ export class ClinicSettingController {
     return this.clinicSettingService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update clinic setting by ID (admin only)' })
@@ -98,7 +98,7 @@ export class ClinicSettingController {
     return this.clinicSettingService.updateById(id, dto);
   }
 
-  @Put(':id/logo')
+  @Patch(':id/logo')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Update clinic logo (admin only)' })

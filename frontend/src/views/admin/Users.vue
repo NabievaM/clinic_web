@@ -47,9 +47,18 @@
           class="hover:bg-gray-50 transition"
         >
           <td class="px-4 py-3 font-medium text-gray-700">{{ u.id }}</td>
-          <td class="px-4 py-3">{{ u.full_name }}</td>
+          <td class="px-4 py-3 max-w-[200px]">
+            <span class="block truncate" :title="u.full_name">
+              {{ u.full_name }}
+            </span>
+          </td>
+
           <td class="px-4 py-3">{{ formatPhone(u.phone) }}</td>
-          <td class="px-4 py-3 text-gray-600">{{ u.email }}</td>
+          <td class="px-4 py-3 max-w-[150px] text-gray-600">
+            <span class="block truncate" :title="u.email">
+              {{ u.email }}
+            </span>
+          </td>
           <td class="px-4 py-3 text-gray-600">{{ u.address || "—" }}</td>
           <td class="px-4 py-3">
             <span
@@ -119,7 +128,9 @@
       </div>
 
       <div class="pr-12">
-        <h3 class="text-lg font-semibold text-gray-800">{{ u.full_name }}</h3>
+        <h3 class="text-lg font-semibold text-gray-800 break-words">
+          {{ u.full_name }}
+        </h3>
 
         <div class="flex items-center gap-2 mt-1">
           <span
@@ -143,7 +154,7 @@
         </div>
 
         <p class="text-sm text-gray-600 mt-2">📞 {{ formatPhone(u.phone) }}</p>
-        <p class="text-sm text-gray-600">✉️ {{ u.email }}</p>
+        <p class="text-sm text-gray-600 break-all">✉️ {{ u.email }}</p>
         <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
         <p class="text-xs text-gray-500 mt-2">
           🗓 {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
