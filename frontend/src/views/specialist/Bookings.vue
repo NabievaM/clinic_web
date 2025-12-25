@@ -40,31 +40,37 @@
         <table class="min-w-full divide-y divide-gray-200 text-center">
           <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
             <tr>
-              <th class="px-4 py-3">ID</th>
-              <th class="px-4 py-3">Foydalanuvchi</th>
-              <th class="px-4 py-3">Xizmat</th>
-              <th class="px-4 py-3">Qabul vaqti</th>
-              <th class="px-4 py-3">Yaratilgan</th>
-              <th class="px-4 py-3">Status</th>
-              <th class="px-4 py-3">Amallar</th>
+              <th class="th">ID</th>
+              <th class="th">Foydalanuvchi</th>
+              <th class="th">Xizmat</th>
+              <th class="th">Qabul vaqti</th>
+              <th class="th">Yaratilgan</th>
+              <th class="th">Status</th>
+              <th class="th">Amallar</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr
-              v-for="b in [...bookingStore.bookings].sort(
-                (a, b) => a.id - b.id
-              )"
+              v-for="b in paginatedBookings"
               :key="b.id"
               class="hover:bg-gray-50 transition"
             >
-              <td class="px-4 py-3 font-medium text-gray-700">{{ b.id }}</td>
-              <td class="px-4 py-3">{{ b.user?.full_name }}</td>
-              <td class="px-4 py-3">{{ b.service?.name }}</td>
-              <td class="px-4 py-3 text-gray-500">
+              <td class="th font-medium text-gray-700">{{ b.id }}</td>
+              <td class="th max-w-[200px]">
+                <span class="block truncate" :title="b.user?.full_name">{{
+                  b.user?.full_name
+                }}</span>
+              </td>
+              <td class="th max-w-[200px]">
+                <span class="block truncate" :title="b.service?.name">{{
+                  b.service?.name
+                }}</span>
+              </td>
+              <td class="th text-gray-500">
                 {{ formatUTC(b.booking_datetime) }}
               </td>
-              <td class="px-4 py-3">{{ formatUTC(b.createdAt) }}</td>
-              <td class="px-4 py-3">
+              <td class="th">{{ formatUTC(b.createdAt) }}</td>
+              <td class="th">
                 <span
                   :class="[
                     'px-2 py-1 rounded-full text-xs font-semibold',
@@ -80,7 +86,7 @@
                   {{ getStatusLabel(b.status) }}
                 </span>
               </td>
-              <td class="px-4 py-3 text-right">
+              <td class="th text-right">
                 <div class="flex justify-center">
                   <button
                     @click="openEditModal(b)"
@@ -106,7 +112,7 @@
         </div>
 
         <div
-          v-for="b in [...bookingStore.bookings].sort((a, b) => a.id - b.id)"
+          v-for="b in paginatedBookings"
           :key="b.id"
           class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
         >
@@ -150,6 +156,14 @@
         </div>
       </div>
 
+      <Pagination
+        v-if="bookingStore.bookings.length > limit"
+        :total="bookingStore.bookings.length"
+        :page="page"
+        :limit="limit"
+        @update:page="page = $event"
+      />
+
       <div
         v-else-if="!bookingStore.loading && !bookingStore.bookings.length"
         class="text-gray-500 mt-4 text-center"
@@ -171,17 +185,21 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useBookingStore } from "@/stores/booking";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { FileText, Edit2 } from "lucide-vue-next";
 import EditModal from "@/components/admin/common/EditModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const bookingStore = useBookingStore();
 
 const showEdit = ref(false);
 const editData = ref({});
 const editError = ref("");
+
+const page = ref(1);
+const limit = ref(10);
 
 const statuses = [
   { value: "pending", label: "Kutilmoqda" },
@@ -209,6 +227,21 @@ const statusLabels = {
 
 onMounted(() => {
   bookingStore.getBookingsForSpecialist();
+});
+
+watch(
+  () => bookingStore.bookings.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedBookings = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...bookingStore.bookings]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 function getStatusLabel(status) {

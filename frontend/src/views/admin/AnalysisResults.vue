@@ -43,30 +43,30 @@
     <table class="min-w-full divide-y divide-gray-200 text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Bron raqami</th>
-          <th class="px-4 py-3">Izoh</th>
-          <th class="px-4 py-3">Qo‘shilgan sana</th>
-          <th class="px-4 py-3">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Bron raqami</th>
+          <th class="th">Izoh</th>
+          <th class="th">Qo‘shilgan sana</th>
+          <th class="th">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="r in [...analysisStore.results].sort((a, b) => a.id - b.id)"
+          v-for="r in paginatedResults"
           :key="r.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ r.id }}</td>
-          <td class="px-4 py-3">{{ r.booking_id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
-            <span class="block truncate" :title="r.description">{{
-              r.description
-            }}</span>
+          <td class="th font-medium text-gray-700">{{ r.id }}</td>
+          <td class="th">{{ r.booking_id }}</td>
+          <td class="th max-w-[200px]">
+            <span class="block truncate" :title="r.description">
+              {{ r.description }}
+            </span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(r.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <div class="flex items-center justify-center gap-3">
               <router-link
                 :to="`/admin/analysis-result/${r.id}`"
@@ -105,7 +105,7 @@
     </div>
 
     <div
-      v-for="r in [...analysisStore.results].sort((a, b) => a.id - b.id)"
+      v-for="r in paginatedResults"
       :key="r.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -139,6 +139,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="analysisStore.results.length > limit"
+    :total="analysisStore.results.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!analysisStore.loading && !analysisStore.results.length"
     class="text-gray-500 mt-4 text-center"
@@ -168,12 +176,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
 import { Plus, TestTube2, Trash2, Edit2 } from "lucide-vue-next";
 import AnalysisResultForm from "@/components/admin/AnalysisResultForm.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const analysisStore = useAnalysisResultStore();
 const showModal = ref(false);
@@ -198,8 +207,26 @@ const form = ref({
   description: "",
 });
 
+const page = ref(1);
+const limit = ref(10);
+
 onMounted(() => {
   analysisStore.getResults();
+});
+
+watch(
+  () => analysisStore.results.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedResults = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...analysisStore.results]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 async function submitForm(data, setError) {

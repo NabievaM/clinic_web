@@ -43,26 +43,32 @@
     <table class="min-w-full divide-y divide-gray-200 text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Sarlavha</th>
-          <th class="px-4 py-3">Qo‘shilgan sana</th>
-          <th class="px-4 py-3">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Sarlavha</th>
+          <th class="th">Qo‘shilgan sana</th>
+          <th class="th">Amallar</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="b in [...bannerStore.banners].sort((a, b) => a.id - b.id)"
+          v-for="b in paginatedBanners"
           :key="b.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ b.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
-            <span class="block truncate" :title="b.title">{{ b.title }}</span>
+          <td class="th font-medium text-gray-700">{{ b.id }}</td>
+
+          <td class="th max-w-[200px]">
+            <span class="block truncate" :title="b.title">
+              {{ b.title }}
+            </span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+
+          <td class="th text-gray-500">
             {{ new Date(b.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+
+          <td class="th">
             <div class="flex items-center justify-center gap-3">
               <router-link
                 :to="`/admin/banner/${b.id}`"
@@ -101,7 +107,7 @@
     </div>
 
     <div
-      v-for="b in [...bannerStore.banners].sort((a, b) => a.id - b.id)"
+      v-for="b in paginatedBanners"
       :key="b.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -135,6 +141,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="bannerStore.banners.length > limit"
+    :total="bannerStore.banners.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!bannerStore.loading && !bannerStore.banners.length"
     class="text-gray-500 mt-4 text-center"
@@ -164,14 +178,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useBannerStore } from "@/stores/useBannerStore";
 import { Image, Plus, Trash2, Edit2 } from "lucide-vue-next";
 import BannerForm from "@/components/admin/BannerForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const bannerStore = useBannerStore();
+
 const showModal = ref(false);
 const showEdit = ref(false);
 const showDelete = ref(false);
@@ -180,6 +196,9 @@ const deleteTitle = ref("");
 const deleteMessage = ref("");
 const editData = ref({});
 const editError = ref("");
+
+const page = ref(1);
+const limit = ref(10);
 
 const form = ref({
   title: "",
@@ -196,6 +215,21 @@ const editFields = [
 
 onMounted(() => {
   bannerStore.getBanners();
+});
+
+watch(
+  () => bannerStore.banners.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedBanners = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...bannerStore.banners]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 async function submitForm(data, setError) {

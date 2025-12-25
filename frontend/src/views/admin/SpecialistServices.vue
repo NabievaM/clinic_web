@@ -36,38 +36,42 @@
     <table class="min-w-full divide-y divide-gray-200 table-auto text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Mutaxassis</th>
-          <th class="px-4 py-3">Xizmat</th>
-          <th class="px-4 py-3">Narx</th>
-          <th class="px-4 py-3">Davomiylik</th>
-          <th class="px-4 py-3 text-center">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Mutaxassis</th>
+          <th class="th">Xizmat</th>
+          <th class="th">Narx</th>
+          <th class="th">Davomiylik</th>
+          <th class="th text-center">Amallar</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="s in [...store.specialists].sort((a, b) => a.id - b.id)"
+          v-for="s in paginatedSpecialists"
           :key="s.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
-            <span class="block truncate" :title="s.specialist.user.full_name">{{
-              s.specialist.user.full_name
-            }}</span>
+          <td class="th font-medium text-gray-700">{{ s.id }}</td>
+
+          <td class="th max-w-[200px]">
+            <span class="block truncate" :title="s.specialist.user.full_name">
+              {{ s.specialist.user.full_name }}
+            </span>
           </td>
-          <td class="px-4 py-3 max-w-[200px]">
+
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="s.service.name">
-              {{ s.service.name }}</span
-            >
+              {{ s.service.name }}
+            </span>
           </td>
-          <td class="px-4 py-3 text-gray-600">
+
+          <td class="th text-gray-600">
             {{ formatPrice(s.service.price) }}
           </td>
-          <td class="px-4 py-3 text-gray-600">
-            {{ s.service.duration }} daqiqa
-          </td>
-          <td class="px-4 py-3">
+
+          <td class="th text-gray-600">{{ s.service.duration }} daqiqa</td>
+
+          <td class="th">
             <div class="flex justify-center gap-3 items-center">
               <router-link
                 :to="{
@@ -102,7 +106,7 @@
     </div>
 
     <div
-      v-for="s in [...store.specialists].sort((a, b) => a.id - b.id)"
+      v-for="s in paginatedSpecialists"
       :key="s.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -155,6 +159,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="store.specialists.length > limit"
+    :total="store.specialists.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!store.loading && !store.specialists.length"
     class="text-gray-500 mt-4 text-center"
@@ -179,13 +191,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useSpecialistServiceStore } from "@/stores/specialistService";
 import { Plus, Trash2, Stethoscope } from "lucide-vue-next";
 import SpecialistServiceForm from "@/components/admin/SpecialistServiceForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const store = useSpecialistServiceStore();
+
 const showModal = ref(false);
 const showDelete = ref(false);
 const deleteData = ref(null);
@@ -194,8 +208,26 @@ const deleteMessage = ref("");
 const form = ref({ specialist_id: "", service_id: "" });
 const formError = ref("");
 
+const page = ref(1);
+const limit = ref(10);
+
 onMounted(() => {
   store.getAllSpecialists();
+});
+
+watch(
+  () => store.specialists.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedSpecialists = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...store.specialists]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 function formatPrice(price) {
@@ -227,10 +259,12 @@ async function submitForm(data) {
     formError.value = data._validationError;
     return;
   }
+
   const success = await store.createMapping({
     specialist_id: Number(data.specialist_id),
     service_id: Number(data.service_id),
   });
+
   if (success) {
     showModal.value = false;
     form.value = { specialist_id: "", service_id: "" };

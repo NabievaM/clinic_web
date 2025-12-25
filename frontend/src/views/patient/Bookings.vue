@@ -39,31 +39,39 @@
         <table class="min-w-full divide-y divide-gray-200 text-center">
           <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
             <tr>
-              <th class="px-4 py-3">ID</th>
-              <th class="px-4 py-3">Mutaxassis</th>
-              <th class="px-4 py-3">Xizmat</th>
-              <th class="px-4 py-3">Qabul vaqti</th>
-              <th class="px-4 py-3">Yaratilgan</th>
-              <th class="px-4 py-3">Status</th>
-              <th class="px-4 py-3">Amallar</th>
+              <th class="th">ID</th>
+              <th class="th">Mutaxassis</th>
+              <th class="th">Xizmat</th>
+              <th class="th">Qabul vaqti</th>
+              <th class="th">Yaratilgan</th>
+              <th class="th">Status</th>
+              <th class="th">Amallar</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr
-              v-for="b in [...bookingStore.bookings].sort(
-                (a, b) => a.id - b.id
-              )"
+              v-for="b in paginatedBookings"
               :key="b.id"
               class="hover:bg-gray-50 transition"
             >
-              <td class="px-4 py-3 font-medium text-gray-700">{{ b.id }}</td>
-              <td class="px-4 py-3">{{ b.specialist?.user?.full_name }}</td>
-              <td class="px-4 py-3">{{ b.service?.name }}</td>
-              <td class="px-4 py-3 text-gray-500">
+              <td class="th font-medium text-gray-700">{{ b.id }}</td>
+              <td class="th max-w-[200px]">
+                <span
+                  class="block truncate"
+                  :title="b.specialist?.user?.full_name"
+                  >{{ b.specialist?.user?.full_name }}</span
+                >
+              </td>
+              <td class="th max-w-[200px]">
+                <span class="block truncate" :title="b.service?.name">{{
+                  b.service?.name
+                }}</span>
+              </td>
+              <td class="th text-gray-500">
                 {{ formatUTC(b.booking_datetime) }}
               </td>
-              <td class="px-4 py-3">{{ formatUTC(b.createdAt) }}</td>
-              <td class="px-4 py-3">
+              <td class="th">{{ formatUTC(b.createdAt) }}</td>
+              <td class="th">
                 <span
                   :class="[
                     'px-2 py-1 rounded-full text-xs font-semibold',
@@ -78,7 +86,7 @@
                   >{{ getStatusLabel(b.status) }}</span
                 >
               </td>
-              <td class="px-4 py-3">
+              <td class="th">
                 <button
                   v-if="b.status === 'pending'"
                   @click="openCancelModal(b)"
@@ -98,7 +106,7 @@
         class="space-y-4 md:hidden"
       >
         <div
-          v-for="b in [...bookingStore.bookings].sort((a, b) => a.id - b.id)"
+          v-for="b in paginatedBookings"
           :key="b.id"
           class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
         >
@@ -177,42 +185,50 @@
           Qabulga yozilish
         </router-link>
       </div>
-    </div>
 
-    <div
-      v-if="showCancel"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      @click.self="closeCancel"
-    >
+      <Pagination
+        v-if="bookingStore.bookings.length > limit"
+        :total="bookingStore.bookings.length"
+        :page="page"
+        :limit="limit"
+        @update:page="page = $event"
+      />
+
       <div
-        class="bg-white w-full max-w-md mx-4 rounded-xl shadow-lg p-6 relative"
+        v-if="showCancel"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        @click.self="closeCancel"
       >
-        <button
-          @click="closeCancel"
-          class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-red-700"
+        <div
+          class="bg-white w-full max-w-md mx-4 rounded-xl shadow-lg p-6 relative"
         >
-          &times;
-        </button>
-        <h2 class="text-lg text-center font-semibold text-gray-800 mb-4">
-          Bronni bekor qilish
-        </h2>
-        <p class="text-gray-600 mb-4 text-center">
-          Siz haqiqatan ham bronni bekor qilmoqchimisiz?
-        </p>
-        <p v-if="cancelError" class="text-red-500 mb-4">{{ cancelError }}</p>
-        <div class="flex justify-center gap-3">
           <button
             @click="closeCancel"
-            class="px-4 py-2 bg-gray-100 rounded text-gray-700 hover:bg-gray-200"
+            class="absolute top-2 right-3 text-2xl text-gray-500 hover:text-red-700"
           >
-            Yo'q
+            &times;
           </button>
-          <button
-            @click="confirmCancel"
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Ha
-          </button>
+          <h2 class="text-lg text-center font-semibold text-gray-800 mb-4">
+            Bronni bekor qilish
+          </h2>
+          <p class="text-gray-600 mb-4 text-center">
+            Siz haqiqatan ham bronni bekor qilmoqchimisiz?
+          </p>
+          <p v-if="cancelError" class="text-red-500 mb-4">{{ cancelError }}</p>
+          <div class="flex justify-center gap-3">
+            <button
+              @click="closeCancel"
+              class="px-4 py-2 bg-gray-100 rounded text-gray-700 hover:bg-gray-200"
+            >
+              Yo'q
+            </button>
+            <button
+              @click="confirmCancel"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Ha
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -220,11 +236,16 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { useBookingStore } from "@/stores/booking";
+import { onMounted, ref, computed, watch } from "vue";
 import AppLayout from "@/layouts/AppLayout.vue";
+import { useBookingStore } from "@/stores/booking";
+import Pagination from "@/components/common/Pagination.vue";
 
 const bookingStore = useBookingStore();
+
+const page = ref(1);
+const limit = ref(10);
+
 const showCancel = ref(false);
 const cancelBookingId = ref(null);
 const cancelError = ref("");
@@ -238,9 +259,25 @@ const statusLabels = {
 
 onMounted(() => bookingStore.getBookingsForPatient());
 
+const paginatedBookings = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...bookingStore.bookings]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
+});
+
+watch(
+  () => bookingStore.bookings.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
 function getStatusLabel(status) {
   return statusLabels[status] || status;
 }
+
 function formatUTC(dateStr) {
   const d = new Date(dateStr);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(
@@ -250,11 +287,13 @@ function formatUTC(dateStr) {
     d.getUTCHours()
   ).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
 }
+
 function openCancelModal(b) {
   cancelBookingId.value = b.id;
   cancelError.value = "";
   showCancel.value = true;
 }
+
 async function confirmCancel() {
   cancelError.value = "";
   try {
@@ -267,6 +306,7 @@ async function confirmCancel() {
     cancelError.value = e.message || "Xatolik yuz berdi";
   }
 }
+
 function closeCancel() {
   showCancel.value = false;
 }

@@ -29,35 +29,35 @@
     <table class="min-w-full divide-y divide-gray-200 table-auto text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Ism</th>
-          <th class="px-4 py-3">Telefon</th>
-          <th class="px-4 py-3">Xabar</th>
-          <th class="px-4 py-3">Sana</th>
-          <th class="px-4 py-3">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Ism</th>
+          <th class="th">Telefon</th>
+          <th class="th">Xabar</th>
+          <th class="th">Sana</th>
+          <th class="th">Amallar</th>
         </tr>
       </thead>
 
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="m in sortedMessages"
+          v-for="m in paginatedMessages"
           :key="m.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ m.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ m.id }}</td>
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="m.name">
               {{ m.name }}
             </span>
           </td>
-          <td class="px-4 py-3">{{ formatPhone(m.phone) }}</td>
-          <td class="px-4 py-3 max-w-xs truncate text-gray-600">
+          <td class="th">{{ formatPhone(m.phone) }}</td>
+          <td class="th max-w-xs truncate text-gray-600">
             {{ m.message }}
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(m.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <div class="flex justify-center gap-3 items-center">
               <router-link
                 :to="`/admin/user-messages/${m.id}`"
@@ -84,7 +84,7 @@
     class="space-y-4 md:hidden"
   >
     <div
-      v-for="m in sortedMessages"
+      v-for="m in paginatedMessages"
       :key="m.id"
       class="relative bg-white p-4 rounded-xl shadow border border-gray-200"
     >
@@ -118,6 +118,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="store.messages.length > limit"
+    :total="store.messages.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!store.loading && !store.messages.length"
     class="text-gray-500 mt-4 text-center"
@@ -135,22 +143,37 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, watch } from "vue";
 import { useUserMessageStore } from "@/stores/userMessage";
 import { Trash2, MessageCircle } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const store = useUserMessageStore();
 const showDelete = ref(false);
 const selected = ref(null);
 
+const page = ref(1);
+const limit = ref(10);
+
 onMounted(() => {
   store.getMessages();
 });
 
-const sortedMessages = computed(() =>
-  [...store.messages].sort((a, b) => a.id - b.id)
+watch(
+  () => store.messages.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
 );
+
+const paginatedMessages = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...store.messages]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
+});
 
 function openDelete(item) {
   selected.value = item;

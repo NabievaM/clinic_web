@@ -36,14 +36,14 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Foydalanuvchi</th>
-          <th class="px-4 py-3 text-left">Xizmat</th>
-          <th class="px-4 py-3 text-left">Mutaxassis</th>
-          <th class="px-4 py-3 text-left">Qabul vaqti</th>
-          <th class="px-4 py-3 text-left">Yaratilgan</th>
-          <th class="px-4 py-3 text-left">Status</th>
-          <th class="px-4 py-3 text-right">Amallar</th>
+          <th class="th text-left">ID</th>
+          <th class="th text-left">Foydalanuvchi</th>
+          <th class="th text-left">Xizmat</th>
+          <th class="th text-left">Mutaxassis</th>
+          <th class="th text-left">Qabul vaqti</th>
+          <th class="th text-left">Yaratilgan</th>
+          <th class="th text-left">Status</th>
+          <th class="th text-right">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -52,27 +52,27 @@
           :key="b.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ b.id }}</td>
-          <td class="px-4 py-3 max-w-[150px]">
+          <td class="th font-medium text-gray-700">{{ b.id }}</td>
+          <td class="th max-w-[150px]">
             <span class="block truncate" :title="b.user?.full_name">{{
               b.user?.full_name
             }}</span>
           </td>
-          <td class="px-4 py-3 max-w-[150px]">
+          <td class="th max-w-[150px]">
             <span class="block truncate" :title="b.service?.name">{{
               b.service?.name
             }}</span>
           </td>
-          <td class="px-4 py-3 max-w-[150px]">
+          <td class="th max-w-[150px]">
             <span class="block truncate" :title="b.specialist?.user?.full_name">
               {{ b.specialist?.user?.full_name }}
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ formatUTC(b.booking_datetime) }}
           </td>
-          <td class="px-4 py-3 text-gray-500">{{ formatUTC(b.createdAt) }}</td>
-          <td class="px-4 py-3">
+          <td class="th text-gray-500">{{ formatUTC(b.createdAt) }}</td>
+          <td class="th">
             <span
               :class="[
                 'px-2 py-1 rounded-full text-xs font-semibold',
@@ -88,7 +88,7 @@
               {{ b.status }}
             </span>
           </td>
-          <td class="px-4 py-3 text-right">
+          <td class="th text-right">
             <div class="flex justify-end gap-2">
               <button
                 @click="openEditModal(b)"
@@ -226,7 +226,7 @@ const editError = ref("");
 const dropdownOpen = ref(false);
 
 const page = ref(1);
-const limit = ref(8);
+const limit = ref(10);
 
 const statuses = [
   { value: "pending", label: "Kutilmoqda" },

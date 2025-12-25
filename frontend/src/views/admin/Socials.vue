@@ -40,34 +40,35 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Platforma</th>
-          <th class="px-4 py-3 text-left">Havola</th>
-          <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
-          <th class="px-4 py-3 text-center">Amallar</th>
+          <th class="th text-left">ID</th>
+          <th class="th text-left">Platforma</th>
+          <th class="th text-left">Havola</th>
+          <th class="th text-left">Qo‘shilgan sana</th>
+          <th class="th text-center">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="acc in [...socialStore.accounts].sort((a, b) => a.id - b.id)"
+          v-for="acc in paginatedAccounts"
           :key="acc.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ acc.id }}</td>
-          <td class="px-4 py-3 capitalize">{{ acc.platform }}</td>
-          <td class="px-4 py-3 text-blue-600 underline max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ acc.id }}</td>
+          <td class="th capitalize">{{ acc.platform }}</td>
+          <td class="th text-blue-600 underline max-w-[200px]">
             <a
               class="block truncate"
               :title="acc.url"
               :href="acc.url"
               target="_blank"
-              >{{ acc.url }}</a
             >
+              {{ acc.url }}
+            </a>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3 text-right">
+          <td class="th text-right">
             <button
               @click="openDeleteModal(acc)"
               class="flex items-center justify-center w-7 h-7 border border-red-200 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition mx-auto"
@@ -90,7 +91,7 @@
     </div>
 
     <div
-      v-for="acc in [...socialStore.accounts].sort((a, b) => a.id - b.id)"
+      v-for="acc in paginatedAccounts"
       :key="acc.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -100,19 +101,30 @@
       >
         <Trash2 class="w-4 h-4" />
       </button>
+
       <div class="flex justify-between items-center mb-2 pr-10">
         <h3 class="text-lg font-semibold capitalize text-gray-800">
           {{ acc.platform }}
         </h3>
       </div>
+
       <p class="text-sm text-blue-600 underline break-all">
         🔗 <a :href="acc.url" target="_blank">{{ acc.url }}</a>
       </p>
+
       <p class="text-xs text-gray-500 mt-2">
         🗓 {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
     </div>
   </div>
+
+  <Pagination
+    v-if="socialStore.accounts.length > limit"
+    :total="socialStore.accounts.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
 
   <div
     v-if="!socialStore.loading && !socialStore.accounts.length"
@@ -122,6 +134,7 @@
   </div>
 
   <SocialAccountForm v-model="showModal" :form="form" @submit="submitForm" />
+
   <DeleteModal
     :visible="showDelete"
     :title="deleteTitle"
@@ -132,18 +145,23 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useSocialAccountStore } from "@/stores/socialAccount";
 import { Share2, Plus, Trash2 } from "lucide-vue-next";
 import SocialAccountForm from "@/components/admin/SocialAccountForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const socialStore = useSocialAccountStore();
+
 const showModal = ref(false);
 const showDelete = ref(false);
 const deleteAccountData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
+
+const page = ref(1);
+const limit = ref(10);
 
 const form = ref({
   platform: "",
@@ -152,6 +170,21 @@ const form = ref({
 
 onMounted(() => {
   socialStore.getSocialAccounts();
+});
+
+watch(
+  () => socialStore.accounts.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedAccounts = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...socialStore.accounts]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 async function submitForm(data, setError) {

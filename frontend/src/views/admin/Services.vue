@@ -32,43 +32,44 @@
     Yuklanmoqda...
   </div>
 
+  <!-- DESKTOP -->
   <div
-    v-if="!serviceStore.loading && serviceStore.services.length"
+    v-if="!serviceStore.loading && paginatedServices.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Xizmat nomi</th>
-          <th class="px-4 py-3 text-left">Narxi</th>
-          <th class="px-4 py-3 text-left">Davomiyligi</th>
-          <th class="px-4 py-3 text-left">Tavsif</th>
-          <th class="px-4 py-3 text-left">Mashhur</th>
-          <th class="px-4 py-3 text-left">Qo‘shildi</th>
-          <th class="px-4 py-3 text-right">Amallar</th>
+          <th class="th text-left">ID</th>
+          <th class="th text-left">Xizmat nomi</th>
+          <th class="th text-left">Narxi</th>
+          <th class="th text-left">Davomiyligi</th>
+          <th class="th text-left">Tavsif</th>
+          <th class="th text-left">Mashhur</th>
+          <th class="th text-left">Qo‘shildi</th>
+          <th class="th text-right">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="s in sortedServices"
+          v-for="s in paginatedServices"
           :key="s.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ s.id }}</td>
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="s.name">{{ s.name }}</span>
           </td>
-          <td class="px-4 py-3 text-green-600 font-semibold">
+          <td class="th text-green-600 font-semibold">
             {{ formatPrice(s.price) }}
           </td>
-          <td class="px-4 py-3">{{ s.duration }} daqiqa</td>
-          <td class="px-4 py-3 text-gray-600 max-w-[200px]">
-            <span class="block truncate" :title="s.description">{{
-              s.description
-            }}</span>
+          <td class="th">{{ s.duration }} daqiqa</td>
+          <td class="th text-gray-600 max-w-[200px]">
+            <span class="block truncate" :title="s.description">
+              {{ s.description }}
+            </span>
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <span
               v-if="s.is_popular"
               class="px-2 py-1 bg-yellow-100 text-yellow-600 text-xs rounded-full font-semibold"
@@ -82,10 +83,10 @@
               Yo‘q
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3 text-right">
+          <td class="th text-right">
             <div class="flex items-center justify-end gap-2">
               <button
                 @click="openEditModal(s)"
@@ -106,8 +107,9 @@
     </table>
   </div>
 
+  <!-- MOBILE -->
   <div
-    v-if="!serviceStore.loading && serviceStore.services.length"
+    v-if="!serviceStore.loading && paginatedServices.length"
     class="space-y-4 md:hidden"
   >
     <div class="flex gap-2 font-bold text-primary items-center">
@@ -116,7 +118,7 @@
     </div>
 
     <div
-      v-for="s in sortedServices"
+      v-for="s in paginatedServices"
       :key="s.id"
       class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
     >
@@ -161,6 +163,15 @@
     </div>
   </div>
 
+  <!-- PAGINATION -->
+  <Pagination
+    v-if="serviceStore.services.length > limit"
+    :total="serviceStore.services.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!serviceStore.loading && !serviceStore.services.length"
     class="text-gray-500 mt-4 text-center"
@@ -190,14 +201,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useServiceStore } from "@/stores/service";
 import { Stethoscope, Plus, Trash2, Edit2 } from "lucide-vue-next";
 import ServiceForm from "@/components/admin/ServiceForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const serviceStore = useServiceStore();
+
+const page = ref(1);
+const limit = ref(10);
 
 const showModal = ref(false);
 const showDelete = ref(false);
@@ -253,12 +268,23 @@ const editFields = [
   },
 ];
 
-const sortedServices = computed(() =>
-  [...serviceStore.services].sort((a, b) => a.id - b.id)
-);
-
 onMounted(() => {
   serviceStore.fetchServices();
+});
+
+watch(
+  () => serviceStore.services.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedServices = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...serviceStore.services]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 function formatPrice(price) {

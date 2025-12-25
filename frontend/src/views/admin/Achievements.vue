@@ -46,10 +46,10 @@
     <table class="min-w-full divide-y divide-gray-200 text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Sarlavha</th>
-          <th class="px-4 py-3">Sana</th>
-          <th class="px-4 py-3">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Sarlavha</th>
+          <th class="th">Sana</th>
+          <th class="th">Amallar</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -58,14 +58,14 @@
           :key="a.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ a.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ a.id }}</td>
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="a.title">{{ a.title }}</span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(a.achieved_date).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <div class="flex items-center justify-center gap-3">
               <router-link
                 :to="`/admin/achievement/${a.id}`"

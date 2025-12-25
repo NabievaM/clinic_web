@@ -33,42 +33,43 @@
   </div>
 
   <div
-    v-if="!specialistStore.loading && sortedSpecialists.length"
+    v-if="!specialistStore.loading && paginatedSpecialists.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
   >
     <table class="min-w-full divide-y divide-gray-200 table-auto text-center">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3">ID</th>
-          <th class="px-4 py-3">Ism</th>
-          <th class="px-4 py-3">Lavozim</th>
-          <th class="px-4 py-3">Tajriba</th>
-          <th class="px-4 py-3">Qo‘shilgan sana</th>
-          <th class="px-4 py-3">Amallar</th>
+          <th class="th">ID</th>
+          <th class="th">Ism</th>
+          <th class="th">Lavozim</th>
+          <th class="th">Tajriba</th>
+          <th class="th">Qo‘shilgan sana</th>
+          <th class="th">Amallar</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-100 text-center">
         <tr
-          v-for="s in sortedSpecialists"
+          v-for="s in paginatedSpecialists"
           :key="s.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ s.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ s.id }}</td>
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="s.user.full_name">{{
               s.user.full_name
             }}</span>
           </td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="s.position">{{
               s.position
             }}</span>
           </td>
-          <td class="px-4 py-3">{{ s.experience_years }}</td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th">{{ s.experience_years }}</td>
+          <td class="th text-gray-500">
             {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <div class="flex items-center justify-center gap-3">
               <router-link
                 :to="`/admin/specialist/${s.id}`"
@@ -96,7 +97,7 @@
   </div>
 
   <div
-    v-if="!specialistStore.loading && sortedSpecialists.length"
+    v-if="!specialistStore.loading && paginatedSpecialists.length"
     class="space-y-4 md:hidden"
   >
     <div class="flex gap-2 font-bold text-primary mb-2 items-center">
@@ -105,7 +106,7 @@
     </div>
 
     <div
-      v-for="s in sortedSpecialists"
+      v-for="s in paginatedSpecialists"
       :key="s.id"
       class="relative bg-white p-4 rounded-xl shadow border border-gray-200"
     >
@@ -162,8 +163,16 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="specialistStore.specialists.length > limit"
+    :total="specialistStore.specialists.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
-    v-if="!specialistStore.loading && !sortedSpecialists.length"
+    v-if="!specialistStore.loading && !specialistStore.specialists.length"
     class="text-gray-500 mt-4 text-center"
   >
     Hech qanday mutaxassis topilmadi 🙅‍♂️
@@ -191,30 +200,47 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useSpecialistStore } from "@/stores/specialist";
 import { Users, Plus, Trash2, Edit2 } from "lucide-vue-next";
 import SpecialistForm from "@/components/admin/SpecialistForm.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 import { updateSpecialist } from "@/api/specialist";
 
 const specialistStore = useSpecialistStore();
+
 const showModal = ref(false);
 const showEdit = ref(false);
 const showDelete = ref(false);
+
 const deleteSpecialistData = ref(null);
 const deleteTitle = ref("");
 const deleteMessage = ref("");
 const editData = ref({});
 const editError = ref("");
 
-const sortedSpecialists = computed(() =>
-  [...specialistStore.specialists].sort((a, b) => a.id - b.id)
-);
+const page = ref(1);
+const limit = ref(10);
 
 onMounted(() => {
   specialistStore.getSpecialists();
+});
+
+watch(
+  () => specialistStore.specialists.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedSpecialists = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...specialistStore.specialists]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 const form = ref({
@@ -320,10 +346,10 @@ function cancelEdit() {
   showEdit.value = false;
 }
 
-function openDeleteModal(specialist) {
-  deleteSpecialistData.value = specialist;
+function openDeleteModal(s) {
+  deleteSpecialistData.value = s;
   deleteTitle.value = "Mutaxassisni o‘chirish";
-  deleteMessage.value = `${specialist.user.full_name} mutaxassisini rostan ham o‘chirmoqchimisiz?`;
+  deleteMessage.value = `${s.user.full_name} mutaxassisini rostan ham o‘chirmoqchimisiz?`;
   showDelete.value = true;
 }
 

@@ -30,37 +30,38 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50 text-gray-700 text-sm uppercase">
         <tr>
-          <th class="px-4 py-3 text-left">ID</th>
-          <th class="px-4 py-3 text-left">Ism Familiya</th>
-          <th class="px-4 py-3 text-left">Telefon</th>
-          <th class="px-4 py-3 text-left">Email</th>
-          <th class="px-4 py-3 text-left">Manzil</th>
-          <th class="px-4 py-3 text-left">Lavozim</th>
-          <th class="px-4 py-3 text-left">Qo‘shilgan sana</th>
-          <th class="px-4 py-3 text-center">Amallar</th>
+          <th class="th text-left">ID</th>
+          <th class="th text-left">Ism Familiya</th>
+          <th class="th text-left">Telefon</th>
+          <th class="th text-left">Email</th>
+          <th class="th text-left">Manzil</th>
+          <th class="th text-left">Lavozim</th>
+          <th class="th text-left">Qo‘shilgan sana</th>
+          <th class="th text-center">Amallar</th>
         </tr>
       </thead>
+
       <tbody class="divide-y divide-gray-100">
         <tr
-          v-for="u in [...userStore.users].sort((a, b) => a.id - b.id)"
+          v-for="u in paginatedUsers"
           :key="u.id"
           class="hover:bg-gray-50 transition"
         >
-          <td class="px-4 py-3 font-medium text-gray-700">{{ u.id }}</td>
-          <td class="px-4 py-3 max-w-[200px]">
+          <td class="th font-medium text-gray-700">{{ u.id }}</td>
+          <td class="th max-w-[200px]">
             <span class="block truncate" :title="u.full_name">
               {{ u.full_name }}
             </span>
           </td>
 
-          <td class="px-4 py-3">{{ formatPhone(u.phone) }}</td>
-          <td class="px-4 py-3 max-w-[150px] text-gray-600">
+          <td class="th">{{ formatPhone(u.phone) }}</td>
+          <td class="th max-w-[150px] text-gray-600">
             <span class="block truncate" :title="u.email">
               {{ u.email }}
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-600">{{ u.address || "—" }}</td>
-          <td class="px-4 py-3">
+          <td class="th text-gray-600">{{ u.address || "—" }}</td>
+          <td class="th">
             <span
               :class="[
                 'px-2 py-1 rounded-full text-xs font-semibold',
@@ -74,10 +75,10 @@
               {{ u.role || "—" }}
             </span>
           </td>
-          <td class="px-4 py-3 text-gray-500">
+          <td class="th text-gray-500">
             {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
           </td>
-          <td class="px-4 py-3">
+          <td class="th">
             <div class="flex items-center justify-center gap-2">
               <button
                 @click="openEditModal(u)"
@@ -108,7 +109,7 @@
     </div>
 
     <div
-      v-for="u in [...userStore.users].sort((a, b) => a.id - b.id)"
+      v-for="u in paginatedUsers"
       :key="u.id"
       class="relative bg-white p-4 rounded-xl shadow border border-gray-200"
     >
@@ -163,6 +164,14 @@
     </div>
   </div>
 
+  <Pagination
+    v-if="userStore.users.length > limit"
+    :total="userStore.users.length"
+    :page="page"
+    :limit="limit"
+    @update:page="page = $event"
+  />
+
   <div
     v-if="!userStore.loading && !userStore.users.length"
     class="text-gray-500 mt-4 text-center"
@@ -190,11 +199,12 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
 import { Users, Trash2, Edit2 } from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
+import Pagination from "@/components/common/Pagination.vue";
 
 const userStore = useUserStore();
 
@@ -238,8 +248,26 @@ const editFields = [
   },
 ];
 
+const page = ref(1);
+const limit = ref(10);
+
 onMounted(() => {
   userStore.getAllUsers();
+});
+
+watch(
+  () => userStore.users.length,
+  (len) => {
+    const maxPage = Math.ceil(len / limit.value) || 1;
+    if (page.value > maxPage) page.value = maxPage;
+  }
+);
+
+const paginatedUsers = computed(() => {
+  const start = (page.value - 1) * limit.value;
+  return [...userStore.users]
+    .sort((a, b) => a.id - b.id)
+    .slice(start, start + limit.value);
 });
 
 function formatPhone(phone) {
