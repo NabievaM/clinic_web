@@ -29,6 +29,7 @@ import { SpecialistServiceModule } from './specialist_service/specialist_service
 import { SpecialistService } from './specialist_service/specialist_service.model';
 import { UserMessageModule } from './user_message/user_message.module';
 import { UserMessage } from './user_message/user_message.model';
+import { DashboardModule } from './dashboard/dashboard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -75,6 +76,7 @@ import { UserMessage } from './user_message/user_message.model';
     StatisticsModule,
     SpecialistServiceModule,
     UserMessageModule,
+    DashboardModule,
   ],
   controllers: [],
   providers: [],
