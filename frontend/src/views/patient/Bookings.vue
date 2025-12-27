@@ -70,7 +70,7 @@
               <td class="th text-gray-500">
                 {{ formatUTC(b.booking_datetime) }}
               </td>
-              <td class="th">{{ formatUTC(b.createdAt) }}</td>
+              <td class="th">{{ formatUZT(b.createdAt) }}</td>
               <td class="th">
                 <span
                   :class="[
@@ -136,7 +136,7 @@
             🗓 {{ formatUTC(b.booking_datetime) }}
           </p>
           <p class="text-xs text-gray-400 mt-1">
-            📌 {{ formatUTC(b.createdAt) }}
+            📌 {{ formatUZT(b.createdAt) }}
           </p>
           <button
             v-if="b.status === 'pending'"
@@ -286,6 +286,17 @@ function formatUTC(dateStr) {
   )}-${String(d.getUTCDate()).padStart(2, "0")} ${String(
     d.getUTCHours()
   ).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+}
+
+function formatUZT(dateStr) {
+  const d = new Date(dateStr);
+  d.setHours(d.getUTCHours() + 5);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 function openCancelModal(b) {

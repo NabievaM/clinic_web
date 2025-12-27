@@ -69,7 +69,7 @@
               <td class="th text-gray-500">
                 {{ formatUTC(b.booking_datetime) }}
               </td>
-              <td class="th">{{ formatUTC(b.createdAt) }}</td>
+              <td class="th">{{ formatUZT(b.createdAt) }}</td>
               <td class="th">
                 <span
                   :class="[
@@ -89,6 +89,7 @@
               <td class="th text-right">
                 <div class="flex justify-center">
                   <button
+                    v-if="b.status !== 'cancelled'"
                     @click="openEditModal(b)"
                     class="flex items-center justify-center w-7 h-7 border border-blue-200 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-600 transition"
                   >
@@ -118,6 +119,7 @@
         >
           <div class="absolute top-3 right-3">
             <button
+              v-if="b.status !== 'cancelled'"
               @click="openEditModal(b)"
               class="flex items-center justify-center w-8 h-8 border border-blue-200 rounded-full bg-blue-50 text-blue-500"
             >
@@ -151,7 +153,7 @@
             🗓 Qabul vaqti: {{ formatUTC(b.booking_datetime) }}
           </p>
           <p class="text-xs text-gray-400 mt-1">
-            📌 Yaratilgan: {{ formatUTC(b.createdAt) }}
+            📌 Yaratilgan: {{ formatUZT(b.createdAt) }}
           </p>
         </div>
       </div>
@@ -205,7 +207,6 @@ const statuses = [
   { value: "pending", label: "Kutilmoqda" },
   { value: "confirmed", label: "Tasdiqlangan" },
   { value: "completed", label: "Yakunlangan" },
-  { value: "cancelled", label: "Bekor qilingan" },
 ];
 
 const editFields = [
@@ -258,7 +259,19 @@ function formatUTC(dateStr) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
+function formatUZT(dateStr) {
+  const d = new Date(dateStr);
+  d.setHours(d.getUTCHours() + 5);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
 function openEditModal(b) {
+  if (b.status === "cancelled") return;
   editData.value = { ...b };
   editError.value = "";
   showEdit.value = true;

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-6 pt-10">
+  <div class="max-w-6xl mx-auto lg:px-6 lg:pt-10">
     <div
       v-if="dashboardStore.loading"
       class="flex items-center justify-center gap-2 text-gray-400"
@@ -34,29 +34,38 @@
       {{ dashboardStore.error }}
     </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div v-else>
       <div
-        v-for="item in cards"
-        :key="item.key"
-        class="rounded-2xl border border-gray-100 p-5 flex items-center justify-between hover:shadow-sm transition"
-        :class="item.bg"
+        class="flex gap-2 font-bold text-primary mb-5 items-center md:hidden"
       >
-        <div>
-          <p class="text-sm text-gray-500 mb-1">
-            {{ item.title }}
-          </p>
+        <LayoutDashboard class="w-5 h-5" />
+        <h2 class="text-lg">Boshqaruv paneli</h2>
+      </div>
 
-          <p class="text-2xl font-medium text-gray-700">
-            {{ item.value }}
-            <span class="text-sm text-gray-400">dona</span>
-          </p>
-        </div>
-
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div
-          class="w-11 h-11 rounded-xl flex items-center justify-center"
-          :class="item.iconBg"
+          v-for="item in cards"
+          :key="item.key"
+          class="rounded-2xl border border-gray-100 p-5 flex items-center justify-between hover:shadow-sm transition"
+          :class="item.bg"
         >
-          <component :is="item.icon" class="w-5 h-5" :class="item.iconColor" />
+          <div>
+            <p class="text-sm text-gray-500 mb-1">{{ item.title }}</p>
+            <p class="text-2xl font-medium text-gray-700">
+              {{ item.value }}
+              <span class="text-sm text-gray-400">dona</span>
+            </p>
+          </div>
+          <div
+            class="w-11 h-11 rounded-xl flex items-center justify-center"
+            :class="item.iconBg"
+          >
+            <component
+              :is="item.icon"
+              class="w-5 h-5"
+              :class="item.iconColor"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -66,7 +75,6 @@
 <script setup>
 import { onMounted, computed } from "vue";
 import { useDashboardStore } from "@/stores/dashboard";
-
 import {
   Users,
   CalendarCheck,
@@ -76,10 +84,10 @@ import {
   Trophy,
   MessageCircle,
   Stethoscope,
+  LayoutDashboard,
 } from "lucide-vue-next";
 
 const dashboardStore = useDashboardStore();
-
 const summary = computed(() => dashboardStore.summary || {});
 
 const cards = computed(() => [

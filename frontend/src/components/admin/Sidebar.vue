@@ -6,8 +6,9 @@
       'lg:translate-x-0 lg:opacity-100 lg:static',
     ]"
   >
-    <div class="p-3 text-2xl font-bold text-primary border-b border-gray-200">
-      Admin paneli
+    <div class="p-3 flex items-center gap-2 border-b border-gray-200">
+      <LayoutDashboard class="w-6 h-6 text-primary" />
+      <span class="text-2xl font-bold text-primary">Admin paneli</span>
     </div>
 
     <nav class="flex-1 p-2 flex flex-col">
@@ -41,7 +42,7 @@
 <script setup>
 import navItems from "@/data/navItems";
 import * as LucideIcons from "lucide-vue-next";
-import { LogOut } from "lucide-vue-next";
+import { LogOut, LayoutDashboard } from "lucide-vue-next";
 
 const props = defineProps({
   open: { type: Boolean, default: false },

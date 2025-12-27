@@ -167,6 +167,12 @@ export class BookingService {
       throw new NotFoundException(`ID raqami ${id} bo‘lgan booking topilmadi!`);
     }
 
+    if (booking.status === 'cancelled') {
+      throw new ForbiddenException(
+        'Bekor qilingan bookingni tahrirlash mumkin emas!',
+      );
+    }
+
     if (currentUser.role === Role.Patient) {
       if (booking.user_id !== currentUser.userId) {
         throw new ForbiddenException(
@@ -189,6 +195,12 @@ export class BookingService {
       if (!specialist || booking.specialist_id !== specialist.id) {
         throw new ForbiddenException(
           'Siz faqat sizga biriktirilgan bookinglarni yangilashingiz mumkin!',
+        );
+      }
+
+      if (updateBookingDto.status === 'cancelled') {
+        throw new ForbiddenException(
+          'Mutaxassis bookingni bekor qila olmaydi!',
         );
       }
     }

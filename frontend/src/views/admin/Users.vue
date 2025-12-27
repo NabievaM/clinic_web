@@ -103,7 +103,7 @@
     v-if="!userStore.loading && userStore.users.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary mb-2 items-center">
+    <div class="flex gap-2 font-bold text-primary mb-5 items-center">
       <Users class="w-5 h-5" />
       <h2 class="text-lg">Foydalanuvchilar ro‘yxati</h2>
     </div>
