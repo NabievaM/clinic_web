@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="max-w-7xl mx-auto px-6 py-2">
-      <div class="flex justify-end mb-2">
+      <div class="flex justify-end mb-4">
         <button
           @click="showModal = true"
           class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -36,10 +36,6 @@
           />
         </svg>
         Yuklanmoqda...
-      </div>
-
-      <div v-if="analysisStore.error" class="text-red-500 py-2">
-        ❌ {{ analysisStore.error }}
       </div>
 
       <div
@@ -116,9 +112,14 @@
             <Edit2 class="w-4 h-4" />
           </button>
 
-          <p class="text-sm font-semibold">📌 {{ r.description }}</p>
-          <p class="text-xs text-gray-500 mt-1">
-            🗓 {{ formatDate(r.createdAt) }}
+          <p class="text-sm font-semibold flex items-center gap-1">
+            <FileText class="w-4 h-4 text-blue-500" />
+            <span class="breal-all max-w-[200px]">{{ r.description }}</span>
+          </p>
+
+          <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-gray-400" />
+            {{ formatDate(r.createdAt) }}
           </p>
 
           <router-link
@@ -163,7 +164,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
-import { Plus, TestTube2, Edit2 } from "lucide-vue-next";
+import { Plus, TestTube2, Edit2, FileText, Calendar } from "lucide-vue-next";
 import AppLayout from "@/layouts/AppLayout.vue";
 import AnalysisResultForm from "@/components/admin/AnalysisResultForm.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";

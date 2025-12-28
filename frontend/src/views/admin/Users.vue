@@ -103,7 +103,7 @@
     v-if="!userStore.loading && userStore.users.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary mb-5 items-center">
+    <div class="flex gap-2 font-bold text-primary mb-4 items-center">
       <Users class="w-5 h-5" />
       <h2 class="text-lg">Foydalanuvchilar ro‘yxati</h2>
     </div>
@@ -154,11 +154,18 @@
           </span>
         </div>
 
-        <p class="text-sm text-gray-600 mt-2">📞 {{ formatPhone(u.phone) }}</p>
-        <p class="text-sm text-gray-600 break-all">✉️ {{ u.email }}</p>
-        <p class="text-sm text-gray-600">📍 {{ u.address || "—" }}</p>
-        <p class="text-xs text-gray-500 mt-2">
-          🗓 {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
+        <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+          <Phone class="w-4 h-4 text-green-500" /> {{ formatPhone(u.phone) }}
+        </p>
+        <p class="text-sm text-gray-600 break-all flex items-center gap-1">
+          <Mail class="w-4 h-4 text-red-500" /> {{ u.email }}
+        </p>
+        <p class="text-sm text-gray-600 flex items-center gap-1">
+          <MapPin class="w-4 h-4 text-blue-500" /> {{ u.address || "—" }}
+        </p>
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <Calendar class="w-4 h-4 text-gray-500" />
+          {{ new Date(u.createdAt).toLocaleDateString("uz-UZ") }}
         </p>
       </div>
     </div>
@@ -201,7 +208,15 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useUserStore } from "@/stores/useUserStore";
-import { Users, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  Users,
+  Trash2,
+  Edit2,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+} from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import Pagination from "@/components/common/Pagination.vue";

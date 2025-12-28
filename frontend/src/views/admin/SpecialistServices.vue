@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-4">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -100,7 +100,7 @@
     v-if="!store.loading && store.specialists.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary mb-2 items-center">
+    <div class="flex gap-2 font-bold text-primary mb-4 items-center">
       <Stethoscope class="w-5 h-5" />
       <h2 class="text-lg">Mutaxassis xizmatlari</h2>
     </div>
@@ -130,8 +130,10 @@
         {{ s.service.name }}
       </h2>
 
-      <p class="text-sm text-gray-600 mb-2">
-        💰 {{ formatPrice(s.service.price) }} — ⏱
+      <p class="text-sm text-gray-600 mb-2 flex items-center gap-1">
+        <DollarSign class="w-4 h-4 text-yellow-500" />
+        {{ formatPrice(s.service.price) }} —
+        <Clock class="w-4 h-4 text-blue-500" />
         {{ s.service.duration }} daqiqa
       </p>
 
@@ -193,7 +195,7 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useSpecialistServiceStore } from "@/stores/specialistService";
-import { Plus, Trash2, Stethoscope } from "lucide-vue-next";
+import { Plus, Trash2, Stethoscope, Clock, DollarSign } from "lucide-vue-next";
 import SpecialistServiceForm from "@/components/admin/SpecialistServiceForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import Pagination from "@/components/common/Pagination.vue";

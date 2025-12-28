@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="max-w-7xl mx-auto px-6 py-2">
+    <div class="max-w-7xl mx-auto px-6 py-4">
       <div
         v-if="bookingStore.loading"
         class="flex items-center gap-2 text-gray-500"
@@ -147,13 +147,20 @@
             </span>
           </div>
 
-          <p class="text-sm text-gray-600">👤 {{ b.user?.full_name }}</p>
-          <p class="text-sm text-gray-600">💉 {{ b.service?.name }}</p>
-          <p class="text-xs text-gray-500 mt-2">
-            🗓 Qabul vaqti: {{ formatUTC(b.booking_datetime) }}
+          <p class="text-sm text-gray-600 flex items-center gap-1">
+            <User class="w-4 h-4 text-purple-600" /> {{ b.user?.full_name }}
           </p>
-          <p class="text-xs text-gray-400 mt-1">
-            📌 Yaratilgan: {{ formatUZT(b.createdAt) }}
+          <p class="text-sm text-gray-600 flex items-center gap-1">
+            <Stethoscope class="w-4 h-4 text-yellow-300" />
+            <span class="break-all max-w-[200px]">{{ b.service?.name }}</span>
+          </p>
+          <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-blue-500" /> Qabul vaqti:
+            {{ formatUTC(b.booking_datetime) }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-gray-400" /> Yaratilgan:
+            {{ formatUZT(b.createdAt) }}
           </p>
         </div>
       </div>
@@ -190,7 +197,7 @@
 import { onMounted, ref, computed, watch } from "vue";
 import { useBookingStore } from "@/stores/booking";
 import AppLayout from "@/layouts/AppLayout.vue";
-import { FileText, Edit2 } from "lucide-vue-next";
+import { FileText, Edit2, User, Calendar, Stethoscope } from "lucide-vue-next";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import Pagination from "@/components/common/Pagination.vue";
 

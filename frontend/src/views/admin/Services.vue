@@ -32,7 +32,6 @@
     Yuklanmoqda...
   </div>
 
-  <!-- DESKTOP -->
   <div
     v-if="!serviceStore.loading && paginatedServices.length"
     class="hidden md:block overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200"
@@ -154,16 +153,22 @@
         </span>
       </div>
 
-      <p class="text-sm text-gray-600 mt-2">💰 {{ formatPrice(s.price) }}</p>
-      <p class="text-sm text-gray-600">⏱ {{ s.duration }} daqiqa</p>
-      <p class="text-sm text-gray-600">📝 {{ s.description }}</p>
-      <p class="text-xs text-gray-500 mt-2">
-        🗓 {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
+      <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+        <DollarSign class="w-4 h-4 text-green-500" /> {{ formatPrice(s.price) }}
+      </p>
+      <p class="text-sm text-gray-600 flex items-center gap-1">
+        <Clock class="w-4 h-4 text-gray-500" /> {{ s.duration }} daqiqa
+      </p>
+      <p class="text-sm text-gray-600 flex items-center gap-1">
+        <Stethoscope class="w-4 h-4 text-yellow-500" /> {{ s.description }}
+      </p>
+      <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-blue-500" />
+        {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
     </div>
   </div>
 
-  <!-- PAGINATION -->
   <Pagination
     v-if="serviceStore.services.length > limit"
     :total="serviceStore.services.length"
@@ -203,7 +208,15 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useServiceStore } from "@/stores/service";
-import { Stethoscope, Plus, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  Stethoscope,
+  Plus,
+  Trash2,
+  Edit2,
+  DollarSign,
+  Clock,
+  Calendar,
+} from "lucide-vue-next";
 import ServiceForm from "@/components/admin/ServiceForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";

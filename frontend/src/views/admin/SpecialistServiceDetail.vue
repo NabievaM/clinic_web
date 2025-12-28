@@ -50,14 +50,14 @@
         </div>
 
         <div class="flex-1">
-          <h1 class="text-4xl font-bold text-gray-900 mb-2">
+          <h1 class="text-4xl font-bold text-gray-900 mb-1">
             {{ mapping.specialist?.user?.full_name }}
           </h1>
-          <p class="text-primary text-lg font-semibold mb-6">
+          <p class="text-primary text-lg font-semibold mb-3">
             {{ mapping.specialist?.position }}
           </p>
 
-          <div class="flex flex-wrap gap-3 mb-8">
+          <div class="flex flex-wrap gap-3 mb-4">
             <span class="badge bg-blue-50 text-blue-700 border-blue-100">
               Tajriba: {{ mapping.specialist?.experience_years }}
             </span>
@@ -67,24 +67,27 @@
             <span class="badge bg-green-50 text-green-700 border-green-100">
               Narx: {{ formatPrice(mapping.service?.price) }}
             </span>
-            <span class="badge bg-gray-50 text-gray-700 border-gray-100">
-              ⏱ {{ mapping.service?.duration }} daqiqa
+            <span
+              class="badge bg-gray-50 text-gray-700 border-gray-100 flex items-center gap-1"
+            >
+              <Clock class="w-4 h-4 text-blue-500" />
+              {{ mapping.service?.duration }} daqiqa
             </span>
           </div>
 
           <div
             v-if="mapping?.specialist?.working_days"
-            class="bg-green-100 mb-6 text-green-700 py-1.5 px-4 rounded-lg text-sm whitespace-pre-line"
+            class="bg-green-100 mb-3 text-green-700 py-1.5 px-4 rounded-lg text-sm whitespace-pre-line"
           >
             <p class="text-lg font-medium">Ish kunlari:</p>
             {{ mapping.specialist.working_days }}
           </div>
 
-          <p class="text-gray-700 text-lg leading-relaxed mb-6">
+          <p class="text-gray-700 text-lg leading-relaxed mb-3">
             {{ mapping.specialist?.description }}
           </p>
 
-          <hr class="my-6" />
+          <hr class="my-2" />
 
           <div>
             <h3 class="font-semibold text-gray-900 mb-2">Xizmat haqida</h3>
@@ -108,6 +111,7 @@ import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useSpecialistServiceStore } from "@/stores/specialistService";
 import { storeToRefs } from "pinia";
+import { Clock } from "lucide-vue-next";
 
 const route = useRoute();
 const store = useSpecialistServiceStore();

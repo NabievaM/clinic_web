@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-3">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -127,9 +127,13 @@
         </button>
       </div>
 
-      <p class="text-sm font-semibold text-gray-800">📌 {{ b.title }}</p>
-      <p class="text-xs text-gray-500 mt-1">
-        🗓 {{ new Date(b.createdAt).toLocaleDateString("uz-UZ") }}
+      <p class="text-sm font-semibold text-gray-800 flex items-center gap-1">
+        <FileText class="w-4 h-4 text-blue-500" />
+        <span class="break-all max-w-[200px]">{{ b.title }}</span>
+      </p>
+      <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-gray-500" />
+        {{ new Date(b.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
 
       <router-link
@@ -180,7 +184,14 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useBannerStore } from "@/stores/useBannerStore";
-import { Image, Plus, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  Image,
+  Plus,
+  Trash2,
+  Edit2,
+  FileText,
+  Calendar,
+} from "lucide-vue-next";
 import BannerForm from "@/components/admin/BannerForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";

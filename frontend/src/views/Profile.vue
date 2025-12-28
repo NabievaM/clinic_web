@@ -1,9 +1,9 @@
 <template>
   <AppLayout>
-    <div class="max-w-md mx-auto py-12 px-6">
+    <div class="max-w-md mx-auto py-12 px-4">
       <div
         v-if="user"
-        class="bg-white shadow-xl rounded-2xl p-8 text-center relative"
+        class="bg-white shadow-xl rounded-2xl p-6 text-center relative"
       >
         <div
           class="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex items-center justify-center text-3xl font-bold shadow-md mx-auto"
@@ -18,15 +18,15 @@
 
         <div class="mt-6 space-y-3 text-gray-700 text-left">
           <div class="flex items-center space-x-3">
-            <span class="text-blue-500">📞</span>
+            <Phone class="w-5 h-5 text-green-500" />
             <span>{{ formattedPhone }}</span>
           </div>
           <div class="flex items-center space-x-3">
-            <span class="text-blue-500">✉️</span>
-            <span>{{ user.email }}</span>
+            <Mail class="w-5 h-5 text-red-500" />
+            <span class="break-all">{{ user.email }}</span>
           </div>
           <div class="flex items-center space-x-3">
-            <span class="text-blue-500">🏠</span>
+            <MapPin class="w-5 h-5 text-blue-500" />
             <span>{{ user.address || "Ko‘rsatilmagan" }}</span>
           </div>
         </div>
@@ -287,6 +287,7 @@ import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, computed } from "vue";
 import AppLayout from "../layouts/AppLayout.vue";
+import { Phone, Mail, MapPin } from "lucide-vue-next";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();

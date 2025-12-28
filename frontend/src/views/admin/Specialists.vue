@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-4">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -100,7 +100,7 @@
     v-if="!specialistStore.loading && paginatedSpecialists.length"
     class="space-y-4 md:hidden"
   >
-    <div class="flex gap-2 font-bold text-primary mb-2 items-center">
+    <div class="flex gap-2 font-bold text-primary mb-4 items-center">
       <Users class="w-5 h-5" />
       <h2 class="text-lg">Mutaxassislar ro‘yxati</h2>
     </div>
@@ -127,7 +127,7 @@
 
       <div class="pr-12">
         <h3 class="text-lg font-semibold text-gray-800">
-          👨‍⚕️ {{ s.user.full_name }}
+          {{ s.user.full_name }}
         </h3>
 
         <div class="flex items-center gap-2 mt-1">
@@ -143,14 +143,17 @@
           </span>
         </div>
 
-        <p class="text-sm text-gray-600 mt-2">
-          💼 Tajriba: {{ s.experience_years || "—" }}
+        <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+          <BriefcaseMedical class="w-4 h-4 text-blue-500" /> Tajriba:
+          {{ s.experience_years || "—" }}
         </p>
-        <p class="text-sm text-gray-600">
-          🧠 Ixtisosligi: {{ s.specialization || "—" }}
+        <p class="text-sm text-gray-600 flex items-center gap-1">
+          <Stethoscope class="w-4 h-4 text-yellow-500" /> Ixtisosligi:
+          {{ s.specialization || "—" }}
         </p>
-        <p class="text-xs text-gray-500 mt-2">
-          🗓 {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <Calendar class="w-4 h-4 text-gray-500" />
+          {{ new Date(s.createdAt).toLocaleDateString("uz-UZ") }}
         </p>
 
         <router-link
@@ -202,7 +205,16 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useSpecialistStore } from "@/stores/specialist";
-import { Users, Plus, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  Users,
+  Plus,
+  Trash2,
+  Edit2,
+  BriefcaseMedical,
+  Stethoscope,
+  Calendar,
+  User,
+} from "lucide-vue-next";
 import SpecialistForm from "@/components/admin/SpecialistForm.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";

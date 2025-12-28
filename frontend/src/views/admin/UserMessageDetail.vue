@@ -40,30 +40,29 @@
 
     <div v-if="message" class="max-w-4xl mx-auto">
       <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-        <!-- HEADER -->
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
         >
           <div>
-            <h1 class="text-2xl font-semibold text-gray-900">
+            <h1 class="text-xl font-semibold text-blue-600">
               {{ message.name }}
             </h1>
-            <p class="text-sm text-gray-500">
-              🗓 {{ new Date(message.createdAt).toLocaleString("uz-UZ") }}
+            <p class="text-sm text-gray-500 flex items-center gap-1 mt-1">
+              <Calendar class="w-4 h-4 text-blue-500" />
+              {{ new Date(message.createdAt).toLocaleString("uz-UZ") }}
             </p>
           </div>
 
           <span
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-700 text-sm font-medium"
+            class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-green-50 text-green-700 text-sm font-medium"
           >
-            📞 {{ formatPhone(message.phone) }}
+            <Phone class="w-4 h-4 text-red-500" />
+            {{ formatPhone(message.phone) || "kiritilmagan" }}
           </span>
         </div>
 
-        <!-- DIVIDER -->
         <div class="h-px w-full bg-gray-100 my-6"></div>
 
-        <!-- MESSAGE -->
         <div>
           <h3
             class="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wide"
@@ -94,6 +93,7 @@ import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useUserMessageStore } from "@/stores/userMessage";
 import { storeToRefs } from "pinia";
+import { Phone, Calendar } from "lucide-vue-next";
 
 const route = useRoute();
 const store = useUserMessageStore();

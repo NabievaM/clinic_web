@@ -50,7 +50,7 @@
               {{ m.name }}
             </span>
           </td>
-          <td class="th">{{ formatPhone(m.phone) }}</td>
+          <td class="th">{{ formatPhone(m.phone) || "kiritilmagan" }}</td>
           <td class="th max-w-xs truncate text-gray-600">
             {{ m.message }}
           </td>
@@ -79,6 +79,7 @@
     </table>
   </div>
 
+  <!-- Mobile -->
   <div
     v-if="!store.loading && store.messages.length"
     class="space-y-4 md:hidden"
@@ -101,12 +102,26 @@
         {{ m.name }}
       </h3>
 
-      <p class="text-sm text-gray-600">📞 {{ formatPhone(m.phone) }}</p>
+      <span
+        class="bg-blue-100 text-primary px-2 py-0.5 font-semibold text-sm rounded-full"
+        >ID: {{ m.id }}</span
+      >
 
-      <p class="text-sm text-gray-600 mt-2 line-clamp-2">💬 {{ m.message }}</p>
+      <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+        <Phone class="w-4 h-4 text-green-500" />
+        {{ formatPhone(m.phone) || "Kiritilmagan" }}
+      </p>
 
-      <p class="text-xs text-gray-500 mt-2">
-        🗓 {{ new Date(m.createdAt).toLocaleDateString("uz-UZ") }}
+      <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+        <MessageCircleMore class="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+        <span class="line-clamp-2">
+          {{ m.message }}
+        </span>
+      </p>
+
+      <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-blue-500" />
+        {{ new Date(m.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
 
       <router-link
@@ -145,7 +160,13 @@
 <script setup>
 import { onMounted, computed, ref, watch } from "vue";
 import { useUserMessageStore } from "@/stores/userMessage";
-import { Trash2, MessageCircle } from "lucide-vue-next";
+import {
+  Trash2,
+  MessageCircleMore,
+  MessageCircle,
+  Phone,
+  Calendar,
+} from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import Pagination from "@/components/common/Pagination.vue";
 

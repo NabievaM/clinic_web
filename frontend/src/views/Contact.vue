@@ -1,26 +1,28 @@
 <template>
   <AppLayout>
-    <div class="bg-gradient-to-b from-gray-50 to-gray-100 py-5">
+    <div class="bg-gradient-to-b from-gray-50 to-gray-100 py-10">
       <div class="max-w-7xl mx-auto px-6">
-        <h1 class="text-4xl font-bold text-gray-800 mb-7 text-center">
+        <h2 class="text-3xl text-primary font-bold mb-10 text-center">
           Bog‘lanish
-        </h1>
+        </h2>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div
-            class="lg:col-span-1 bg-white shadow-xl rounded-2xl p-8 space-y-6"
+            class="lg:col-span-1 bg-white shadow-xl rounded-2xl p-5 space-y-6"
           >
             <h2 class="text-xl font-semibold text-gray-700 mb-4">
-              Aloqa ma’lumotlari
+              Aloqa ma’lumotlari :
             </h2>
 
             <div class="flex items-center gap-4">
               <MapPin class="w-6 h-6 text-blue-600" />
-              <p class="text-gray-700">{{ clinic?.address }}</p>
+              <p class="text-gray-700 max-w-[200px]">
+                <span class="break-all">{{ clinic?.address }}</span>
+              </p>
             </div>
 
             <div class="flex items-center gap-4">
-              <Phone class="w-6 h-6 text-blue-600" />
+              <Phone class="w-6 h-6 text-green-600" />
               <a
                 :href="`tel:${clinic?.phone}`"
                 class="text-blue-600 hover:underline"
@@ -30,7 +32,7 @@
             </div>
 
             <div class="flex items-center gap-4">
-              <Mail class="w-6 h-6 text-blue-600" />
+              <Mail class="w-6 h-6 text-red-600" />
               <a
                 :href="`mailto:${clinic?.email}`"
                 class="text-blue-600 hover:underline"
@@ -40,7 +42,7 @@
             </div>
 
             <div class="flex items-center gap-4">
-              <Clock class="w-6 h-6 text-blue-600" />
+              <Clock class="w-6 h-6 text-yellow-600" />
               <div class="whitespace-pre-line">
                 {{ clinic?.working_hours }}
               </div>
@@ -98,6 +100,33 @@
               16.2Z"
                   />
                 </svg>
+
+                <svg
+                  v-else-if="account.platform === 'google_business'"
+                  class="w-10 h-10"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M21.35 11.1h-9.18v2.96h5.26c-.22 1.2-.9 
+                2.22-1.9 2.9v2.4h3.08c1.8-1.66 2.84-4.1 
+                2.84-6.96 0-.66-.06-1.3-.1-1.3Z"
+                  />
+                  <path
+                    d="M12.17 22c2.43 0 4.46-.8 5.94-2.2l-3.08-2.4c-.85.57-1.94.9-2.86.9-2.2 
+                0-4.07-1.5-4.74-3.52H4.2v2.48A9.9 9.9 0 0 0 12.17 
+                22Z"
+                  />
+                  <path
+                    d="M7.43 14.78a5.99 5.99 0 0 1 0-5.56V6.74H4.2a9.9 
+                9.9 0 0 0 0 10.52h3.23Z"
+                  />
+                  <path
+                    d="M12.17 5.94c1.34 0 2.54.46 3.47 1.36l2.58-2.58A9.93 
+                9.93 0 0 0 12.17 2a9.9 9.9 0 0 0-7.97 
+                4.74l3.23 2.48c.67-2.02 2.54-3.52 4.74-3.52Z"
+                  />
+                </svg>
               </a>
             </div>
           </div>
@@ -120,7 +149,7 @@
               ></iframe>
             </div>
 
-            <div class="bg-white shadow-xl rounded-2xl p-8">
+            <div class="bg-white shadow-xl rounded-2xl p-3">
               <h2 class="text-xl font-semibold text-gray-700 mb-2">
                 Xabar yuborish
               </h2>

@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="max-w-7xl mx-auto px-6 py-2">
+    <div class="max-w-7xl mx-auto px-6 py-4">
       <div
         v-if="bookingStore.loading"
         class="flex items-center gap-2 text-gray-500"
@@ -105,6 +105,11 @@
         v-if="!bookingStore.loading && bookingStore.bookings.length"
         class="space-y-4 md:hidden"
       >
+        <div class="flex gap-2 font-bold text-primary items-center">
+          <FileText class="w-5 h-5" />
+          <h2 class="text-lg">Bronlarim</h2>
+        </div>
+
         <div
           v-for="b in paginatedBookings"
           :key="b.id"
@@ -128,15 +133,21 @@
               >{{ getStatusLabel(b.status) }}</span
             >
           </div>
-          <p class="text-sm text-gray-600">
-            👤 {{ b.specialist?.user?.full_name }}
+          <p class="text-sm text-gray-600 flex items-center gap-1">
+            <User class="w-4 h-4 text-purple-600" />
+            {{ b.specialist?.user?.full_name }}
           </p>
-          <p class="text-sm text-gray-600">💉 {{ b.service?.name }}</p>
-          <p class="text-xs text-gray-500 mt-2">
-            🗓 {{ formatUTC(b.booking_datetime) }}
+          <p class="text-sm text-gray-600 flex items-center gap-1">
+            <Stethoscope class="w-4 h-4 text-yellow-300" />
+            <span class="break-all max-w-[200px]">{{ b.service?.name }}</span>
           </p>
-          <p class="text-xs text-gray-400 mt-1">
-            📌 {{ formatUZT(b.createdAt) }}
+          <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-blue-500" /> Qabul vaqti:
+            {{ formatUTC(b.booking_datetime) }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-gray-400" /> Yaratilgan:
+            {{ formatUZT(b.createdAt) }}
           </p>
           <button
             v-if="b.status === 'pending'"
@@ -240,6 +251,7 @@ import { onMounted, ref, computed, watch } from "vue";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { useBookingStore } from "@/stores/booking";
 import Pagination from "@/components/common/Pagination.vue";
+import { FileText, User, Calendar, Stethoscope } from "lucide-vue-next";
 
 const bookingStore = useBookingStore();
 

@@ -160,16 +160,23 @@
         </span>
       </div>
 
-      <p class="text-sm text-gray-600">👤 {{ b.user?.full_name }}</p>
-      <p class="text-sm text-gray-600">💉 {{ b.service?.name }}</p>
-      <p class="text-sm text-gray-600">
-        👨‍⚕️ {{ b.specialist?.user?.full_name }}
+      <p class="text-sm text-gray-600 flex items-center gap-1">
+        <User class="w-4 h-4 text-blue-500" /> {{ b.user?.full_name }}
       </p>
-      <p class="text-xs text-gray-500 mt-2">
-        🗓 Qabul vaqti: {{ formatUTC(b.booking_datetime) }}
+      <p class="text-sm text-gray-600 flex items-center gap-1">
+        <Syringe class="w-4 h-4 text-gray-400" /> {{ b.service?.name }}
       </p>
-      <p class="text-xs text-gray-400 mt-1">
-        📌 Yaratilgan: {{ formatUZT(b.createdAt) }}
+      <p class="text-sm text-gray-600 flex items-center gap-1">
+        <Stethoscope class="w-4 h-4 text-yellow-500" />
+        {{ b.specialist?.user?.full_name }}
+      </p>
+      <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-blue-500" />
+        Qabul vaqti: {{ formatUTC(b.booking_datetime) }}
+      </p>
+      <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-gray-500" />
+        Yaratilgan: {{ formatUZT(b.createdAt) }}
       </p>
     </div>
   </div>
@@ -211,7 +218,16 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useBookingStore } from "@/stores/booking";
-import { FileText, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  FileText,
+  Trash2,
+  Edit2,
+  User,
+  Syringe,
+  UserCheck,
+  Calendar,
+  Stethoscope,
+} from "lucide-vue-next";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import Pagination from "@/components/common/Pagination.vue";

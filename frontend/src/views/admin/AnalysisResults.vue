@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-4">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -125,9 +125,13 @@
         </button>
       </div>
 
-      <p class="text-sm font-semibold text-gray-800">📌 {{ r.description }}</p>
-      <p class="text-xs text-gray-500 mt-1">
-        🗓 {{ new Date(r.createdAt).toLocaleDateString("uz-UZ") }}
+      <p class="text-sm font-semibold text-gray-800 flex items-center gap-1">
+        <FileText class="w-4 h-4 text-blue-500" />
+        <span class="break-all max-w-[200px]">{{ r.description }}</span>
+      </p>
+      <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-gray-500" />
+        {{ new Date(r.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
 
       <router-link
@@ -178,7 +182,14 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
-import { Plus, TestTube2, Trash2, Edit2 } from "lucide-vue-next";
+import {
+  Plus,
+  TestTube2,
+  Trash2,
+  Edit2,
+  FileText,
+  Calendar,
+} from "lucide-vue-next";
 import AnalysisResultForm from "@/components/admin/AnalysisResultForm.vue";
 import EditModal from "@/components/admin/common/EditModal.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";

@@ -20,7 +20,7 @@
       Ortga qaytish
     </router-link>
 
-    <div v-if="specialist" class="max-w-6xl mx-auto px-6 py-16">
+    <div v-if="specialist" class="max-w-6xl mx-auto px-6 py-8">
       <div class="flex flex-col md:flex-row items-start gap-12">
         <div class="flex-shrink-0 w-full md:w-1/3">
           <img

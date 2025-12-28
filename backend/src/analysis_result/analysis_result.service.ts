@@ -43,7 +43,13 @@ export class AnalysisResultService {
     const booking = await this.bookingModel.findByPk(dto.booking_id);
     if (!booking) {
       throw new NotFoundException(
-        `ID raqami ${dto.booking_id} bo‘lgan booking topilmadi!`,
+        `ID raqami ${dto.booking_id} bo‘lgan bron topilmadi!`,
+      );
+    }
+
+    if (booking.status === 'cancelled') {
+      throw new BadRequestException(
+        'Bekor qilingan bron uchun analiz natijasi yuklab bo‘lmaydi!',
       );
     }
 
@@ -54,7 +60,7 @@ export class AnalysisResultService {
 
       if (!specialist || booking.specialist_id !== specialist.id) {
         throw new ForbiddenException(
-          'Siz faqat sizga biriktirilgan bookinglarga analysis result qo‘shishingiz mumkin!',
+          'Siz faqat sizga biriktirilgan bronlarga analysis result qo‘shishingiz mumkin!',
         );
       }
     }
@@ -89,7 +95,7 @@ export class AnalysisResultService {
         {
           model: Booking,
           where: { specialist_id: specialist.id },
-          attributes: [],
+          attributes: ['id', 'status'],
         },
       ],
       order: [['createdAt', 'DESC']],
@@ -117,14 +123,14 @@ export class AnalysisResultService {
     const result = await this.analysisModel.findByPk(id);
     if (!result) {
       throw new NotFoundException(
-        `ID ${id} bo‘lgan analysis result topilmadi!`,
+        `ID ${id} bo‘lgan analiz natijasi topilmadi!`,
       );
     }
 
     const booking = await this.bookingModel.findByPk(result.booking_id);
     if (!booking) {
       throw new NotFoundException(
-        `ID ${result.booking_id} bo‘lgan booking topilmadi!`,
+        `ID ${result.booking_id} bo‘lgan bron topilmadi!`,
       );
     }
 
@@ -159,21 +165,25 @@ export class AnalysisResultService {
 
     if (!result) {
       throw new NotFoundException(
-        `ID raqami ${id} bo‘lgan analysis result topilmadi!`,
+        `ID raqami ${id} bo‘lgan analiz natijasi topilmadi!`,
       );
     }
 
     const booking = await this.bookingModel.findByPk(result.booking_id);
     if (!booking) {
       throw new NotFoundException(
-        `ID raqami ${result.booking_id} bo‘lgan booking topilmadi!`,
+        `ID raqami ${result.booking_id} bo‘lgan bron topilmadi!`,
+      );
+    }
+
+    if (booking.status === 'cancelled') {
+      throw new BadRequestException(
+        'Bekor qilingan brondagi analiz natijasini tahrirlab bo‘lmaydi!',
       );
     }
 
     if (currentUser.role === Role.Patient) {
-      throw new ForbiddenException(
-        'Patient analysis resultni yangilay olmaydi!',
-      );
+      throw new ForbiddenException('Bemor analiz natijasini yangilay olmaydi!');
     }
 
     if (currentUser.role === Role.Specialist) {
@@ -183,7 +193,7 @@ export class AnalysisResultService {
 
       if (!specialist || booking.specialist_id !== specialist.id) {
         throw new ForbiddenException(
-          'Siz faqat sizga biriktirilgan bookinglarga tegishli analysis resultlarni yangilashingiz mumkin!',
+          'Siz faqat sizga biriktirilgan bronlarga tegishli analiz natijasini yangilashingiz mumkin!',
         );
       }
     }
@@ -204,7 +214,7 @@ export class AnalysisResultService {
 
     if (!result) {
       throw new NotFoundException(
-        `ID raqami ${id} bo‘lgan analysis result topilmadi!`,
+        `ID raqami ${id} bo‘lgan analiz natijasi topilmadi!`,
       );
     }
 
@@ -215,7 +225,7 @@ export class AnalysisResultService {
     await result.destroy();
 
     return {
-      message: `ID raqami ${id} bo‘lgan analysis result muvaffaqiyatli o‘chirildi!`,
+      message: `ID raqami ${id} bo‘lgan analiz natijasi muvaffaqiyatli o‘chirildi!`,
     };
   }
 }

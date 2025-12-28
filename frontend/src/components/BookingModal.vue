@@ -72,10 +72,11 @@
       />
 
       <button
-        class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700 transition"
+        class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium hover:bg-blue-700 transition flex items-center justify-center gap-2"
         @click="bookNow"
       >
-        ✅ Tasdiqlash
+        <span>Tasdiqlash</span>
+        <CheckCircle class="w-5 h-5" />
       </button>
     </div>
   </div>
@@ -85,6 +86,7 @@
 import { ref, onMounted } from "vue";
 import { createBooking } from "../api/booking";
 import { fetchSpecialistsByService } from "../api/specialist-service";
+import { CheckCircle } from "lucide-vue-next";
 
 const props = defineProps({
   service: { type: Object, required: true },

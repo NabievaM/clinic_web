@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-4">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -108,12 +108,16 @@
         </h3>
       </div>
 
-      <p class="text-sm text-blue-600 underline break-all">
-        🔗 <a :href="acc.url" target="_blank">{{ acc.url }}</a>
+      <p
+        class="text-sm text-blue-600 underline break-all flex items-center gap-1"
+      >
+        <Link class="w-4 h-4 text-gray-500" />
+        <a :href="acc.url" target="_blank">{{ acc.url }}</a>
       </p>
 
-      <p class="text-xs text-gray-500 mt-2">
-        🗓 {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
+      <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-blue-500" />
+        {{ new Date(acc.createdAt).toLocaleDateString("uz-UZ") }}
       </p>
     </div>
   </div>
@@ -147,7 +151,7 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useSocialAccountStore } from "@/stores/socialAccount";
-import { Share2, Plus, Trash2 } from "lucide-vue-next";
+import { Share2, Plus, Trash2, Link, Calendar } from "lucide-vue-next";
 import SocialAccountForm from "@/components/admin/SocialAccountForm.vue";
 import DeleteModal from "@/components/admin/common/DeleteModal.vue";
 import Pagination from "@/components/common/Pagination.vue";

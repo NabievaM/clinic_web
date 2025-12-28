@@ -68,8 +68,6 @@
           :series="userChart.series"
         />
       </div>
-
-      <div>Mashhur hizmatlar qoshiladi bu qismiga</div>
     </div>
   </div>
 </template>

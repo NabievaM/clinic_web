@@ -68,9 +68,9 @@
     </div>
 
     <div class="lg:w-1/3 flex flex-col gap-4">
-      <h1 class="text-2xl font-bold text-primary">
+      <p class="text-sm font-semibold text-primary">
         {{ analysisStore.result.description }}
-      </h1>
+      </p>
 
       <div class="space-y-2 text-sm text-gray-700">
         <div class="bg-gray-50 p-3 rounded shadow-sm">

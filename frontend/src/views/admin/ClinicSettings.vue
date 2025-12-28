@@ -5,9 +5,9 @@
     >
       <button
         @click="openEditModal"
-        class="absolute top-4 right-4 flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-100 transition"
+        class="absolute top-4 right-4 flex items-center gap-1 p-2 bg-blue-50 text-blue-600 rounded-full border border-blue-200 hover:bg-blue-100 transition"
       >
-        <Edit class="w-4 h-4" /> Tahrirlash
+        <Edit3 class="w-4 h-4" />
       </button>
 
       <div class="flex-shrink-0 flex justify-center items-start">
@@ -49,9 +49,18 @@
           <strong>Joylashuv:</strong> {{ clinicStore.clinic.map_location }}
         </p>
 
-        <p class="text-gray-500 text-sm">
-          📅 Qo‘shilgan: {{ formatDate(clinicStore.clinic.createdAt) }} | 🔄
-          Yangilangan: {{ formatDate(clinicStore.clinic.updatedAt) }}
+        <p
+          class="text-gray-500 text-[11px] md:text-xs flex flex-wrap items-center gap-x-3 gap-y-1"
+        >
+          <span class="flex items-center gap-1">
+            <Calendar class="w-3 h-3 text-blue-500" />
+            Qo‘shilgan: {{ formatDate(clinicStore.clinic.createdAt) }}
+          </span>
+
+          <span class="flex items-center gap-1">
+            <RefreshCw class="w-3 h-3 text-blue-500" />
+            Yangilangan: {{ formatDate(clinicStore.clinic.updatedAt) }}
+          </span>
         </p>
       </div>
     </div>
@@ -86,7 +95,7 @@
 import { onMounted, ref } from "vue";
 import { useClinicStore } from "@/stores/clinic";
 import EditModal from "@/components/admin/common/EditModal.vue";
-import { Edit } from "lucide-vue-next";
+import { Edit3, Calendar, RefreshCw } from "lucide-vue-next";
 
 const clinicStore = useClinicStore();
 const showEdit = ref(false);
@@ -97,15 +106,20 @@ const editFields = [
   { label: "Klinika nomi", model: "name", type: "text" },
   { label: "Telefon raqam", model: "phone", type: "text" },
   { label: "Email", model: "email", type: "email" },
-  { label: "Manzil", model: "address", type: "text" },
-  { label: "Joylashuv", model: "map_location", type: "text" },
+  {
+    label: "Joylashuv",
+    model: "map_location",
+    type: "text",
+  },
+  { label: "Manzil", model: "address", type: "text", colSpan: 2 },
   {
     label: "Ish vaqtlari",
     model: "working_hours",
     type: "textarea",
     placeholder: "Dushanba 10:00-20:00",
+    colSpan: 2,
   },
-  { label: "Logo", model: "logo_url", type: "file" },
+  { label: "Logo", model: "logo_url", type: "file", colSpan: 2 },
 ];
 
 onMounted(() => clinicStore.getClinic());

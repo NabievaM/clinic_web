@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-end mb-2">
+  <div class="flex justify-end mb-4">
     <button
       @click="showModal = true"
       class="flex items-center gap-1 p-2 bg-primary text-white font-medium rounded-xl shadow hover:shadow-lg hover:bg-primary/90 transition-all duration-200"
@@ -124,9 +124,17 @@
         </button>
       </div>
 
-      <p class="text-sm font-semibold text-gray-800 w-56">🏆{{ a.title }}</p>
-      <p class="text-xs text-gray-500 mt-1">
-        🗓 {{ new Date(a.achieved_date).toLocaleDateString("uz-UZ") }}
+      <p
+        class="text-sm font-semibold text-gray-800 w-56 flex items-center gap-1"
+      >
+        <Award class="w-4 h-4 text-amber-300" /><span
+          class="break-all max-w-[200px]"
+          >{{ a.title }}</span
+        >
+      </p>
+      <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+        <Calendar class="w-4 h-4 text-blue-500" />
+        {{ new Date(a.achieved_date).toLocaleDateString("uz-UZ") }}
       </p>
 
       <router-link
@@ -176,7 +184,7 @@
 
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
-import { Plus, Award, Trash2, Edit2 } from "lucide-vue-next";
+import { Plus, Award, Trash2, Edit2, Calendar } from "lucide-vue-next";
 import { useAchievementStore } from "@/stores/achievement";
 import Pagination from "@/components/common/Pagination.vue";
 import AchievementForm from "@/components/admin/AchievementForm.vue";

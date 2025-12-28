@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="max-w-7xl mx-auto px-6 py-2">
+    <div class="max-w-7xl mx-auto px-6 py-4">
       <div
         v-if="analysisStore.loading"
         class="flex items-center gap-2 text-gray-500"
@@ -26,10 +26,6 @@
           />
         </svg>
         Yuklanmoqda...
-      </div>
-
-      <div v-if="analysisStore.error" class="text-red-500 py-2">
-        ❌ {{ analysisStore.error }}
       </div>
 
       <div
@@ -82,7 +78,7 @@
       >
         <div class="flex gap-2 font-bold text-primary items-center">
           <TestTube2 class="w-5 h-5" />
-          <h2 class="text-lg">Analiz natijalari</h2>
+          <h2 class="text-lg">Analiz natijalarim</h2>
         </div>
 
         <div
@@ -90,9 +86,13 @@
           :key="r.id"
           class="relative bg-white p-4 rounded-lg shadow border border-gray-200"
         >
-          <p class="text-sm font-semibold">📌 {{ r.description }}</p>
-          <p class="text-xs text-gray-500 mt-1">
-            🗓 {{ formatDate(r.createdAt) }}
+          <p class="text-sm font-semibold flex items-center gap-1">
+            <FileText class="w-4 h-4 text-blue-500" />
+            <span class="breal-all max-w-[200px]">{{ r.description }}</span>
+          </p>
+          <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+            <Calendar class="w-4 h-4 text-gray-400" />
+            {{ formatDate(r.createdAt) }}
           </p>
 
           <router-link
@@ -156,7 +156,7 @@
 <script setup>
 import { onMounted, ref, computed, watch } from "vue";
 import { useAnalysisResultStore } from "@/stores/analysisResult";
-import { TestTube2 } from "lucide-vue-next";
+import { TestTube2, Calendar, FileText } from "lucide-vue-next";
 import AppLayout from "@/layouts/AppLayout.vue";
 import Pagination from "@/components/common/Pagination.vue";
 

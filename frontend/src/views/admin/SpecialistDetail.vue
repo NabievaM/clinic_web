@@ -27,14 +27,14 @@
       </div>
 
       <div class="flex-1">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">
+        <h1 class="text-4xl font-bold text-gray-900 mb-1">
           {{ specialist.user.full_name }}
         </h1>
-        <p class="text-primary text-lg font-semibold mb-6">
+        <p class="text-primary text-lg font-semibold mb-3">
           {{ specialist.position }}
         </p>
 
-        <div class="flex flex-wrap gap-3 mb-8">
+        <div class="flex flex-wrap gap-3 mb-4">
           <span
             class="bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium border border-blue-100"
           >
@@ -51,7 +51,7 @@
 
         <div
           v-if="specialist.working_days"
-          class="bg-green-100 text-green-700 py-1.5 px-4 rounded-lg text-sm whitespace-pre-line mb-8"
+          class="bg-green-100 text-green-700 py-1.5 px-4 rounded-lg text-sm whitespace-pre-line mb-4"
         >
           <p class="text-lg font-medium">Ish kunlari:</p>
           {{ specialist.working_days }}
