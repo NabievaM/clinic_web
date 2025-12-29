@@ -106,12 +106,11 @@
           <label class="text-sm font-medium text-gray-700"
             >Ish kunlari va vaqti</label
           >
-          <input
+          <textarea
             v-model="localForm.working_days"
-            type="text"
             placeholder="Dush-Juma 09:00-18:00"
-            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition"
-          />
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition resize-none"
+          ></textarea>
         </div>
 
         <div class="space-y-1.5">

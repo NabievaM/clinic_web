@@ -18,7 +18,7 @@
       <div class="mb-4 p-4 bg-blue-50 rounded-xl text-sm">
         <p class="text-gray-700"><strong>Xizmat:</strong> {{ service.name }}</p>
         <p class="text-gray-700">
-          <strong>Narxi:</strong> {{ service.price }} so'm
+          <strong>Narxi:</strong> {{ formatPrice(service.price) }}
         </p>
         <p class="text-gray-700">
           <strong>Davomiyligi:</strong> {{ service.duration }} daqiqa
@@ -107,6 +107,10 @@ onMounted(async () => {
     console.error("❌ Specialistlarni olishda xatolik:", error);
   }
 });
+
+function formatPrice(price) {
+  return new Intl.NumberFormat("uz-UZ").format(price || 0) + " so‘m";
+}
 
 const bookNow = async () => {
   if (!selectedSpecialist.value || !selectedDate.value || !selectedTime.value) {

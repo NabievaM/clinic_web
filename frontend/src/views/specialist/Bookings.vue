@@ -28,10 +28,6 @@
         Yuklanmoqda...
       </div>
 
-      <div v-if="bookingStore.error" class="text-red-500 py-2">
-        ❌ {{ bookingStore.error }}
-      </div>
-
       <!-- Desktop Table -->
       <div
         v-if="!bookingStore.loading && bookingStore.bookings.length"

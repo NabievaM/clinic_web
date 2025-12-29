@@ -60,7 +60,11 @@
               {{ u.email }}
             </span>
           </td>
-          <td class="th text-gray-600">{{ u.address || "—" }}</td>
+          <td class="th text-gray-600 max-w-[150px]">
+            <span class="block truncate" :title="u.address">{{
+              u.address || "—"
+            }}</span>
+          </td>
           <td class="th">
             <span
               :class="[

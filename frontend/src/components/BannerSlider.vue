@@ -18,8 +18,13 @@
         <div
           class="absolute inset-0 flex flex-col justify-center items-center text-white bg-black/40"
         >
-          <h2 class="text-2xl md:text-4xl font-bold">{{ banner.title }}</h2>
-          <p class="text-sm md:text-lg">{{ banner.subtitle }}</p>
+          <h2 class="text-md md:text-3xl font-bold text-center">
+            {{ banner.title }}
+          </h2>
+
+          <p class="text-xs md:text-lg text-center mt-1">
+            {{ banner.subtitle }}
+          </p>
         </div>
       </div>
     </SwiperSlide>
@@ -83,5 +88,22 @@ const getImageUrl = (image) =>
 .swiper-pagination-bullet-active {
   opacity: 1;
   background: #38bdf8;
+}
+
+@media (max-width: 767px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    background: transparent !important;
+    border: none !important;
+    width: auto;
+    height: auto;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 14px;
+    color: white;
+    opacity: 0.7;
+  }
 }
 </style>

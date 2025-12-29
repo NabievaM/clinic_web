@@ -265,12 +265,6 @@ const editFields = [
     placeholder: "30",
   },
   {
-    label: "Tavsif",
-    model: "description",
-    type: "textarea",
-    placeholder: "Xizmat haqida qisqacha ma’lumot...",
-  },
-  {
     label: "Mashhur",
     model: "is_popular",
     type: "select",
@@ -278,6 +272,13 @@ const editFields = [
       { value: true, label: "Ha" },
       { value: false, label: "Yo‘q" },
     ],
+  },
+  {
+    label: "Tavsif",
+    model: "description",
+    type: "textarea",
+    placeholder: "Xizmat haqida qisqacha ma’lumot...",
+    colSpan: 2,
   },
 ];
 

@@ -38,7 +38,7 @@
     </div>
 
     <div class="lg:w-1/3 flex flex-col gap-4">
-      <p class="text-sm lg:text-2.5xl font-bold text-primary">
+      <p class="text-sm lg:text-2xl font-bold text-primary">
         {{ bannerStore.banner.title }}
       </p>
       <p
