@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
+import type { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
